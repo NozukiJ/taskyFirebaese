@@ -1,0 +1,119 @@
+<div *ngIf="newTask" class="task-detail-container">
+    <div class="header-container">
+      <h2 class="title">タスクを追加</h2>
+      <div class="button-container">
+        <button (click)="saveTask()">保存</button>
+        <button (click)="cancel()">キャンセル</button>
+      </div>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">タイトル:</span>
+      <span class="detail-content">
+        <input [(ngModel)]="newTask.title" placeholder="タイトル">
+      </span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">プロジェクト:</span>
+      <span class="detail-content">
+        <select [(ngModel)]="newTask.projectId">
+          <option value="">プロジェクトを選択</option>
+          <option *ngFor="let project of projects" [value]="project.id">{{ project.name }}</option>
+        </select>
+      </span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">説明:</span>
+      <span class="detail-content">
+        <textarea [(ngModel)]="newTask.description" placeholder="説明"></textarea>
+      </span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">開始日時:</span>
+      <span class="detail-content">
+        <input type="datetime-local" [(ngModel)]="newTask.startDateTime">
+      </span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">終了日時:</span>
+      <span class="detail-content">
+        <input type="datetime-local" [(ngModel)]="newTask.endDateTime">
+      </span>
+    </div>
+    <div class="detail-row" *ngIf="newTask.reminderTime">
+      <span class="detail-label">通知:</span>
+      <span class="detail-content">
+        <input type="number" [(ngModel)]="newTask.reminderTime.value" min="1" class="reminder-input">
+        <select [(ngModel)]="newTask.reminderTime.unit" class="reminder-select">
+          <option *ngFor="let unit of reminderUnits" [value]="unit">{{ unit }}</option>
+        </select>
+      </span>
+    </div>
+    <div class="detail-row" *ngIf="newTask.repeatSettings">
+      <span class="detail-label">繰り返し設定:</span>
+      <span class="detail-content">
+        <div class="repeat-settings">
+          <div>
+            <label>頻度:</label>
+            <select [(ngModel)]="newTask.repeatSettings.frequency">
+              <option value="none">繰り返さない</option>
+              <option value="daily">毎日</option>
+              <option value="weekly">毎週</option>
+              <option value="monthly">毎月</option>
+              <option value="yearly">毎年</option>
+              <option value="monthlyFromEnd">月末から指定日</option>
+            </select>        
+          </div>
+          <div *ngIf="newTask.repeatSettings.frequency === 'monthlyFromEnd'">
+            <label>月末からのオフセット日数:</label>
+            <input type="number" [(ngModel)]="newTask.repeatSettings.daysOffsetFromEnd" min="1">
+          </div>
+          <div>
+            <label>終了日:</label>
+            <input type="date" [(ngModel)]="newTask.repeatSettings.endDate">
+          </div>
+          <div>
+            <label>祝日と休日を除外:</label>
+            <input type="checkbox" [(ngModel)]="newTask.repeatSettings.businessDaysOnly">
+          </div>
+          <div>
+            <label>除外日:</label>
+            <input type="date" [(ngModel)]="excludeDate">
+            <button (click)="addExcludeDate()">追加</button>
+            <div *ngFor="let date of newTask.repeatSettings.excludeDates">
+              {{ date }}
+              <button (click)="removeExcludeDate(date)">削除</button>
+            </div>
+          </div>
+        </div>
+      </span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">優先度:</span>
+      <span class="detail-content">
+        <select [(ngModel)]="newTask.priority">
+          <option value="low">低</option>
+          <option value="medium">中</option>
+          <option value="high">高</option>
+        </select>
+      </span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">タグ:</span>
+      <span class="detail-content">
+        <input [(ngModel)]="newTask.tag" placeholder="タグ">
+      </span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">タグの色:</span>
+      <span class="detail-content">
+        <div class="color-dropdown">
+          <div *ngFor="let color of colors" 
+               class="color-option" 
+               [ngClass]="{'selected': newTask.tagColor === color}"
+               [ngStyle]="{'background-color': color}"
+               (click)="selectColor(color)"></div>
+        </div>
+      </span>
+    </div>
+  </div>
+  

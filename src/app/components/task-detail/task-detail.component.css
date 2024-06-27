@@ -1,0 +1,108 @@
+.task-detail-container {
+    max-width: 600px;
+    margin: 0 auto;
+    overflow: auto;
+    max-height: 80vh;
+    padding: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+  }
+  
+  .header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .title {
+    font-size: 1.2em;
+    margin: 0;
+    color: #777777; /* タイトルの色を濃いグレーに変更 */
+  }
+  
+  .button-container {
+    display: flex;
+    gap: 10px;
+  }
+  
+  button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: #d3d3d3; /* 明るいグレー */
+    color: #333; /* 黒に近いグレー */
+  }
+  
+  button:hover {
+    background-color: #bbb; /* ホバー時の色もグレー */
+  }
+  
+  .detail-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .detail-label {
+    flex: 1;
+    font-weight: bold;
+    text-align: right;
+    margin-right: 10px;
+  }
+  
+  .detail-content {
+    flex: 2;
+    display: flex;
+    align-items: center;
+  }
+  
+  input, textarea, select {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  .reminder-input, .reminder-select {
+    width: 48%;
+    box-sizing: border-box;
+    margin: 0;
+    height: 40px;
+  }
+  
+  .color-dropdown {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+  
+  .color-option {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: border 0.3s ease;
+  }
+  
+  .color-option.selected {
+    border: 3px solid black;
+  }
+  
+  .subtask-container {
+    margin-top: 20px;
+  }
+  
+  .subtask-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .subtask-title {
+    flex-grow: 1;
+  }
+  

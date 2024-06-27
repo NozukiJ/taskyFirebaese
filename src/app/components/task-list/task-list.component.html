@@ -1,0 +1,96 @@
+<div class="task-list-container">
+    <div class="task-actions">
+      <button class="add-task-btn" (click)="openAddTaskDialog()">＋ タスクを追加</button>
+      <button (click)="openAddProjectDialog()" class="action-btn">＋ プロジェクトを追加</button>
+      <button (click)="deleteSelectedTasks()" class="action-btn">選択したタスクを削除</button>
+    </div>
+    <div class="task-filters">
+      <div class="filter-group">
+        <label for="searchText">検索:</label>
+        <input type="text" id="searchText" [(ngModel)]="searchText" placeholder="タスクを検索" class="search-input">
+      </div>
+      <div class="filter-group">
+        <label for="sortPriority">優先度でソート:</label>
+        <button id="sortPriority" (click)="sortTasks('priority')" class="filter-btn">優先度</button>
+      </div>
+      <div class="filter-group">
+        <label for="sortDueDate">終了日でソート:</label>
+        <button id="sortDueDate" (click)="sortTasks('endDateTime')" class="filter-btn">終了日</button>
+      </div>
+      <div class="filter-group">
+        <label for="tagSelect">タグ:</label>
+        <select id="tagSelect" [(ngModel)]="selectedTag" class="filter-select">
+          <option value="">すべてのタグ</option>
+          <option *ngFor="let tag of tags">{{ tag }}</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="prioritySelect">優先度:</label>
+        <select id="prioritySelect" [(ngModel)]="selectedPriority" class="filter-select">
+          <option value="">すべての優先度</option>
+          <option value="low">低</option>
+          <option value="medium">中</option>
+          <option value="high">高</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="statusSelect">ステータス:</label>
+        <select id="statusSelect" [(ngModel)]="selectedStatus" class="filter-select">
+          <option value="全てのステータス">全てのステータス</option>
+          <option value="未着手">未着手</option>
+          <option value="進行中">進行中</option>
+          <option value="未着手と進行中">未着手と進行中</option>
+          <option value="完了">完了</option>
+        </select>
+      </div>
+    </div>
+    <ul class="task-list">
+      <!-- リストのヘッダー -->
+      <li class="task-header">
+        <div class="task-header-content">
+          <span class="task-header-item">選択</span>
+          <span class="task-header-item">タイトル</span>
+          <span class="task-header-item">プロジェクト</span> <!-- プロジェクト名の列 -->
+          <span class="task-header-item">ステータス</span>
+          <span class="task-header-item">優先度</span>
+          <span class="task-header-item">開始日時</span>
+          <span class="task-header-item">終了日時</span>
+          <span class="task-header-item">タグ</span>
+          <span class="task-header-item">タグの色</span>
+        </div>
+      </li>
+      <!-- リストのタスク -->
+      <li *ngFor="let task of filteredTasks(); let i = index" cdkDrag class="task-item" cdkDropList (cdkDropListDropped)="drop($event)">
+        <div class="task-item-content">
+          <input type="checkbox" [(ngModel)]="task.selected" class="task-checkbox">
+          <a (click)="openTaskDetailDialog(task)" class="task-link">
+            <div class="task-title">{{ task.title }}</div>
+            <div class="task-details">
+              <span class="task-project">{{ getProjectName(task.projectId || '') }}</span> <!-- プロジェクト名の表示 -->
+              <span class="task-status">{{ task.status }}</span>
+              <span class="task-priority" [ngClass]="task.priority">{{ getPriorityLabel(task.priority) }}</span>
+              <span class="task-start-date">{{ task.startDateTime | date: 'short' }}</span>
+              <span class="task-end-date">{{ task.endDateTime | date: 'short' }}</span>
+              <span class="task-tag">{{ task.tag }}</span>
+              <span class="task-tag-color" [style.background-color]="task.tagColor"></span>
+            </div>
+          </a>
+        </div>
+        <ul class="subtask-list">
+          <li *ngFor="let subtask of task.subtasks" class="subtask-item">
+            <div class="subtask-item-content" (click)="openSubtaskDetailDialog(subtask)">
+              <input type="checkbox" [(ngModel)]="subtask.selected" class="subtask-checkbox" (click)="$event.stopPropagation()">
+              <span class="subtask-title">{{ subtask.title }}</span>
+              <span class="subtask-status">{{ subtask.status }}</span>
+              <span class="subtask-priority" [ngClass]="subtask.priority">{{ getPriorityLabel(subtask.priority) }}</span>
+              <span class="subtask-start-date">{{ subtask.startDateTime | date: 'short' }}</span>
+              <span class="subtask-end-date">{{ subtask.endDateTime | date: 'short' }}</span>
+              <span class="subtask-tag">{{ subtask.tag }}</span>
+              <span class="subtask-tag-color" [style.background-color]="subtask.tagColor"></span>
+            </div>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+  

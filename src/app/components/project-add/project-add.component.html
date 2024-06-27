@@ -1,0 +1,35 @@
+<div>
+    <h2>プロジェクトを追加</h2>
+    <div>
+      <label>名前:
+        <input [(ngModel)]="newProject.name" placeholder="名前">
+      </label>
+    </div>
+    <div>
+      <label>説明:
+        <textarea [(ngModel)]="newProject.description" placeholder="説明"></textarea>
+      </label>
+    </div>
+    <div>
+      <label>開始日:
+        <input type="date" [(ngModel)]="newProject.startDate">
+      </label>
+    </div>
+    <div>
+      <label>終了日:
+        <input type="date" [(ngModel)]="newProject.endDate">
+      </label>
+    </div>
+    <div>
+      <label>色:</label>
+      <div class="color-dropdown">
+        <div *ngFor="let color of colors" 
+             class="color-option" 
+             [ngStyle]="{'background-color': color, 'border': newProject.color === color ? '3px solid black' : '1px solid #000'}"
+             (click)="newProject.color = color"></div>
+      </div>
+    </div>
+    <button (click)="saveProject()">保存</button>
+    <button (click)="cancel()">キャンセル</button>
+  </div>
+  

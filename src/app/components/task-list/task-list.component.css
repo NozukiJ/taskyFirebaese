@@ -1,0 +1,221 @@
+.task-list-container {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .task-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .add-task-btn {
+    background-color: #d3d3d3; /* 明るいグレー */
+    color: #333; /* 黒に近いグレー */
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .add-task-btn:hover {
+    background-color: #bbb; /* ホバー時の色もグレー */
+  }
+  
+  .task-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .filter-group label {
+    font-weight: bold;
+  }
+  
+  .search-input, .filter-select, .filter-btn, .action-btn, .show-completed {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .filter-btn, .action-btn {
+    background-color: #d3d3d3; /* 明るいグレー */
+    color: #333; /* 黒に近いグレー */
+    cursor: pointer;
+  }
+  
+  .filter-btn:hover, .action-btn:hover {
+    background-color: #bbb; /* ホバー時の色もグレー */
+  }
+  
+  .task-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .task-header {
+    background-color: #e9ecef;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .task-header-content {
+    display: grid;
+    grid-template-columns: 5% 15% 10% 10% 10% 15% 15% 15% 5%;
+    width: 100%;
+  }
+  
+  .task-header-item {
+    font-weight: bold;
+    text-align: center;
+    border-right: 1px solid #ccc;
+  }
+  
+  .task-header-item:last-child {
+    border-right: none;
+  }
+  
+  .task-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .task-item-content {
+    display: grid;
+    grid-template-columns: 5% 15% 10% 10% 10% 15% 15% 15% 5%;
+    width: 100%;
+    align-items: center;
+  }
+  
+  .task-checkbox {
+    text-align: center;
+  }
+  
+  .task-link {
+    display: contents;
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  .task-title {
+    text-align: center;
+    border-right: 1px solid #ccc;
+    padding-right: 10px;
+  }
+  
+  .task-details {
+    display: contents;
+  }
+  
+  .task-details span {
+    text-align: center;
+    border-right: 1px solid #ccc;
+    min-height: 1em;
+  }
+  
+  .task-details span:last-child {
+    border-right: none;
+  }
+  
+  .task-status {
+    text-align: center;
+  }
+  
+  .task-priority.low {
+    color: green;
+  }
+  
+  .task-priority.medium {
+    color: orange;
+  }
+  
+  .task-priority.high {
+    color: red;
+  }
+  
+  .task-due-date, .task-tag {
+    font-size: 0.9em;
+    color: #555;
+  }
+  
+  .task-tag {
+    display: inline-block;
+    padding: 2px 4px;
+    border-radius: 3px;
+    background-color: transparent;
+  }
+  
+  .task-tag-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: inline-block;
+    border: 1px solid #000;
+    margin: 0 auto;
+  }
+  
+  .subtask-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 10px 0 0 20px;
+  }
+  
+  .subtask-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 5px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .subtask-item-content {
+    display: grid;
+    grid-template-columns: 5% 15% 10% 10% 15% 15% 15% 15%;
+    width: 100%;
+    align-items: center;
+  }
+  
+  .subtask-title, .subtask-status, .subtask-priority, .subtask-start-date, .subtask-end-date, .subtask-tag, .subtask-tag-color {
+    text-align: center;
+    border-right: 1px solid #ccc;
+    min-height: 1em;
+  }
+  
+  .subtask-title {
+    padding-right: 10px;
+  }
+  
+  .subtask-tag-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: inline-block;
+    border: 1px solid #000;
+    margin: 0 auto;
+  }
+  
+  .subtask-item-content span:last-child {
+    border-right: none;
+  }
+  

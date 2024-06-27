@@ -1,0 +1,63 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #d3d3d3; /* 明るいグレー */
+  color: #333; /* 黒に近いグレー */
+}
+
+button:hover {
+  background-color: #bbb; /* ホバー時の色もグレー */
+}
+
+h2 {
+  font-size: 1.5em;
+  color: #777777; /* タイトルの色を濃いグレーに変更 */
+}
+
+h3 {
+  font-size: 1.2em;
+  color: #777777; /* タイトルの色を濃いグレーに変更 */
+}
+
+.holiday-week-container {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+}
+
+.holiday-week-item {
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #e3bc08; /* 日ビューと同じ色に設定 */
+}
+
+.holiday-day-container {
+  margin-top: 10px;
+}
+
+.holiday-day-item {
+  font-weight: bold;
+  color: #e3bc08;
+}
+
+.holiday-item { /* 共通クラスを作成 */
+  font-weight: bold;
+  color: #e3bc08;
+}

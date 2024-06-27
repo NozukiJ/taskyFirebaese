@@ -1,1 +1,170 @@
 /* You can add global styles to this file, and also import other style files */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+    color: #333;
+    display: flex;
+    justify-content: flex-start;
+    align-items: stretch;
+    min-height: 100vh;
+  }
+  
+  .app-container {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+  }
+  
+  .side-nav {
+    width: 220px;  /* 幅を広げる */
+    background-color: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .nav-link {
+    text-decoration: none;
+    padding: 15px;  /* パディングを広げる */
+    color: #333;
+    margin-bottom: 15px;  /* マージンを広げる */
+    border-radius: 4px;
+  }
+  
+  .nav-link:hover {
+    background-color: #e0e0e0;
+  }
+  
+  .content {
+    flex-grow: 1;
+    padding: 40px;  /* パディングを広げる */
+    overflow-y: auto;
+    padding-right: 30px;  /* スクロールバーのスペースを広げる */
+    margin-right: 30px;  /* スクロールバーのスペースを確保 */
+  }
+  
+  h2 {
+    color: #4CAF50;
+    font-size: 1.8em;  /* フォントサイズを大きくする */
+    margin-bottom: 20px;
+  }
+  
+  button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;  /* パディングを広げる */
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;  /* フォントサイズを大きくする */
+    margin: 6px 4px;  /* マージンを広げる */
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  button:hover {
+    background-color: #45a049;
+  }
+  
+  input[type="text"], input[type="date"], input[type="color"], textarea, select {
+    width: 100%;
+    padding: 10px;  /* パディングを広げる */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-top: 8px;
+    margin-bottom: 14px;  /* マージンを広げる */
+    resize: vertical;
+  }
+  
+  .container {
+    padding: 30px;  /* パディングを広げる */
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 1000px;  /* 幅を広げる */
+    width: 100%;
+    margin: 20px;  /* マージンを広げる */
+  }
+  
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  li {
+    padding: 15px;  /* パディングを広げる */
+    background: #fff;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;  /* マージンを広げる */
+    border-radius: 4px;
+  }
+  
+  a {
+    text-decoration: none;
+    color: #4CAF50;
+  }
+  
+  a:hover {
+    text-decoration: underline;
+  }
+  
+  label {
+    font-weight: bold;
+    display: inline-block;
+    margin-right: 15px;  /* マージンを広げる */
+  }
+  
+  .custom-dialog-container .mat-dialog-container {
+    padding: 0; /* ダイアログの余白を削除 */
+  }
+  
+  .button-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;  /* マージンを広げる */
+  }
+  
+  button {
+    padding: 15px 25px;  /* パディングを広げる */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: #d3d3d3;  /* 明るいグレー */
+    color: #333;  /* 黒に近いグレー */
+  }
+  
+  button:hover {
+    background-color: #bbb;  /* ホバー時の色もグレー */
+  }
+  
+  h3 {
+    font-size: 1.4em;  /* フォントサイズを大きくする */
+    color: #777777;  /* タイトルの色を濃いグレーに変更 */
+  }
+  
+  .holiday-week-container {
+    display: flex;
+    flex-direction: column;
+    margin-top: 15px;  /* マージンを広げる */
+  }
+  
+  .holiday-week-item {
+    margin-bottom: 10px;  /* マージンを広げる */
+    font-weight: bold;
+    color: #e3bc08;  /* 日ビューと同じ色に設定 */
+  }
+  
+  .holiday-day-container {
+    margin-top: 15px;  /* マージンを広げる */
+  }
+  
+  .holiday-item {  /* 共通クラスを作成 */
+    font-weight: bold;
+    color: #e3bc08;
+  }
+  

@@ -1,0 +1,13 @@
+.color-dropdown {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  
+  .color-option {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  

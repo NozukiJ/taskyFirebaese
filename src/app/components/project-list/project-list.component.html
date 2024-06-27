@@ -1,0 +1,85 @@
+<div class="task-list-container">
+    <div class="task-actions">
+        <button class="add-task-btn" (click)="openAddTaskDialog()">＋ タスクを追加</button>
+        <button (click)="openAddProjectDialog()" class="action-btn">＋ プロジェクトを追加</button>
+        <button (click)="deleteSelectedTasks()" class="action-btn">選択したタスクを削除</button>
+        <button (click)="deleteSelectedProjects()" class="action-btn">選択したプロジェクトを削除</button>
+    </div>
+    <div class="project-task-list-container">
+        <ul>
+            <li *ngFor="let project of projects">
+                <div class="project-header">
+                    <input type="checkbox" [(ngModel)]="project.selected" class="project-checkbox">
+                    <h3 contenteditable="true" (blur)="updateProjectName(project, $event)">{{ project.name }}</h3>
+                </div>
+                <ul class="task-list">
+                    <li class="task-header">
+                        <div class="task-header-content">
+                            <span class="task-header-item">選択</span>
+                            <span class="task-header-item">タイトル</span>
+                            <span class="task-header-item">ステータス</span>
+                            <span class="task-header-item">優先度</span>
+                            <span class="task-header-item">開始日時</span>
+                            <span class="task-header-item">終了日時</span>
+                            <span class="task-header-item">タグ</span>
+                            <span class="task-header-item">タグの色</span>
+                        </div>
+                    </li>
+                    <li class="task-item" *ngFor="let task of getTasksForProject(project.id)">
+                        <div class="task-item-content">
+                            <input type="checkbox" [(ngModel)]="task.selected" class="task-checkbox">
+                            <a (click)="openTaskDetailDialog(task)" class="task-link">
+                                <div class="task-title">{{ task.title }}</div>
+                                <div class="task-details">
+                                    <span class="task-status">{{ task.status }}</span>
+                                    <span class="task-priority" [ngClass]="task.priority">{{ getPriorityLabel(task.priority) }}</span>
+                                    <span class="task-start-date">{{ task.startDateTime | date: 'short' }}</span>
+                                    <span class="task-end-date">{{ task.endDateTime | date: 'short' }}</span>
+                                    <span class="task-tag">{{ task.tag }}</span>
+                                    <span class="task-tag-color" [style.background-color]="task.tagColor"></span>
+                                </div>
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+            </li>
+            <!-- プロジェクトが割り当てられていないタスクを表示 -->
+            <li>
+                <div class="project-header">
+                    <input type="checkbox" [(ngModel)]="noProjectSelected" class="project-checkbox">
+                    <h3>プロジェクト無所属</h3>
+                </div>
+                <ul class="task-list">
+                    <li class="task-header">
+                        <div class="task-header-content">
+                            <span class="task-header-item">選択</span>
+                            <span class="task-header-item">タイトル</span>
+                            <span class="task-header-item">ステータス</span>
+                            <span class="task-header-item">優先度</span>
+                            <span class="task-header-item">開始日時</span>
+                            <span class="task-header-item">終了日時</span>
+                            <span class="task-header-item">タグ</span>
+                            <span class="task-header-item">タグの色</span>
+                        </div>
+                    </li>
+                    <li class="task-item" *ngFor="let task of getTasksForProject('')">
+                        <div class="task-item-content">
+                            <input type="checkbox" [(ngModel)]="task.selected" class="task-checkbox">
+                            <a (click)="openTaskDetailDialog(task)" class="task-link">
+                                <div class="task-title">{{ task.title }}</div>
+                                <div class="task-details">
+                                    <span class="task-status">{{ task.status }}</span>
+                                    <span class="task-priority" [ngClass]="task.priority">{{ getPriorityLabel(task.priority) }}</span>
+                                    <span class="task-start-date">{{ task.startDateTime | date: 'short' }}</span>
+                                    <span class="task-end-date">{{ task.endDateTime | date: 'short' }}</span>
+                                    <span class="task-tag">{{ task.tag }}</span>
+                                    <span class="task-tag-color" [style.background-color]="task.tagColor"></span>
+                                </div>
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>

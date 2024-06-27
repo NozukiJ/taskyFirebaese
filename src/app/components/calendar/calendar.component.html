@@ -1,0 +1,53 @@
+<div class="container">
+  <h2>カレンダー</h2>
+  <div class="button-container">
+    <button (click)="setView(CalendarView.Month)">月ビュー</button>
+    <button (click)="setView(CalendarView.Week)">週ビュー</button>
+    <button (click)="setView(CalendarView.Day)">日ビュー</button>
+    <button (click)="previousPeriod()">前の期間</button>
+    <button (click)="nextPeriod()">次の期間</button>
+    <button class="add-task-button" (click)="addTask()">タスクを追加</button>
+  </div>
+  <div *ngIf="view === CalendarView.Month">
+    <h3>{{ viewDate | date: 'yyyy年MM月' }}</h3>
+    <mwl-calendar-month-view
+      [viewDate]="viewDate"
+      [events]="allEvents"
+      (eventClicked)="handleEvent('Clicked', $event.event)">
+    </mwl-calendar-month-view>
+  </div>
+  <div *ngIf="view === CalendarView.Week">
+    <h3>{{ getWeekRange() }}</h3>
+    <div class="holiday-week-container">
+      <ng-container *ngFor="let holidayEvent of holidayEvents">
+        <div *ngIf="isSameWeek(holidayEvent.start, viewDate)">
+          <div class="holiday-week-item holiday-item">
+            {{ holidayEvent.start | date: 'EEEE, MMM d' }} - {{ holidayEvent.title }}
+          </div>
+        </div>
+      </ng-container>
+    </div>
+    <mwl-calendar-week-view
+      [viewDate]="viewDate"
+      [events]="getNonHolidayEvents()"
+      (eventClicked)="handleEvent('Clicked', $event.event)">
+    </mwl-calendar-week-view>
+  </div>
+  <div *ngIf="view === CalendarView.Day">
+    <h3>{{ viewDate | date: 'yyyy年MM月dd日' }}</h3>
+    <div class="holiday-day-container">
+      <ng-container *ngFor="let holidayEvent of holidayEvents">
+        <div *ngIf="isSameDay(holidayEvent.start, viewDate)">
+          <div class="holiday-day-item holiday-item">
+            {{ holidayEvent.title }}
+          </div>
+        </div>
+      </ng-container>
+    </div>
+    <mwl-calendar-day-view
+      [viewDate]="viewDate"
+      [events]="getNonHolidayEvents()"
+      (eventClicked)="handleEvent('Clicked', $event.event)">
+    </mwl-calendar-day-view>
+  </div>
+</div>

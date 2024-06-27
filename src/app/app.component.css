@@ -1,0 +1,31 @@
+.app-container {
+    display: flex;
+    height: 100vh;
+  }
+  
+  .side-nav {
+    width: 200px;
+    background-color: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+  }
+  
+  .nav-link {
+    text-decoration: none;
+    padding: 10px;
+    color: #000;
+    margin-bottom: 10px;
+    border-radius: 4px;
+  }
+  
+  .nav-link:hover {
+    background-color: #e0e0e0;
+  }
+  
+  .content {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+  }
+  
