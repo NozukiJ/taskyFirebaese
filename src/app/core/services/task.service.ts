@@ -1,17 +1,22 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore'; // 修正
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Task } from '../models/task.model';
 import { HolidayService } from './holiday.service';
-import { startOfMonth, endOfMonth, subDays } from 'date-fns';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { TaskDetailComponent } from '../../components/task-detail/task-detail.component';
 import { Observable } from 'rxjs';
+import { endOfMonth, subDays } from 'date-fns';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaskService {
+  private currentDialogRefs: { [taskId: string]: MatDialogRef<TaskDetailComponent> } = {};
+
   constructor(
     private firestore: AngularFirestore,
-    private holidayService: HolidayService
+    private holidayService: HolidayService,
+    private dialog: MatDialog
   ) {}
 
   getTasks(): Observable<Task[]> {
@@ -36,15 +41,35 @@ export class TaskService {
     return this.firestore.collection('tasks').doc(task.id).delete();
   }
 
+  openTaskDetail(task: Task) {
+    console.log('openTaskDetail called');
+
+    if (this.currentDialogRefs[task.id]) {
+      console.log('Task detail is already open for this task:', task.id);
+      return; // 既にタスク詳細が開かれている場合は何もしない
+    }
+
+    const dialogRef = this.dialog.open(TaskDetailComponent, {
+      data: { task }
+    });
+
+    this.currentDialogRefs[task.id] = dialogRef;
+
+    dialogRef.afterClosed().subscribe(() => {
+      console.log('Dialog closed for task:', task.id);
+      delete this.currentDialogRefs[task.id]; // ダイアログが閉じられたら参照を削除
+    });
+  }
+
   async generateRecurringTasks() {
     const today = new Date().toISOString().split('T')[0];
     try {
       const holidays = await this.holidayService.getHolidays();
       const tasksSnapshot = await this.firestore.collection<Task>('tasks').get().toPromise();
-      
-      if (tasksSnapshot) { // 修正
+
+      if (tasksSnapshot) {
         tasksSnapshot.forEach(taskDoc => {
-          const task = taskDoc.data() as Task; // 修正
+          const task = taskDoc.data() as Task;
           if (task.repeatSettings) {
             switch (task.repeatSettings.frequency) {
               case 'monthlyFromEnd':

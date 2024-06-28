@@ -1,0 +1,17 @@
+.color-dropdown {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .color-option {
+    width: 20px;
+    height: 20px;
+    margin: 2px;
+    cursor: pointer;
+  }
+  
+  button {
+    margin-top: 10px;
+    margin-right: 5px;
+  }
+  

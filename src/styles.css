@@ -170,4 +170,15 @@ body {
     font-weight: bold;
     color: #e3bc08;
   }
+
+  html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden; /* ページ全体のスクロールを無効にする */
+  }
+  
+  .mat-dialog-container {
+    padding: 0;
+  }
+  
   

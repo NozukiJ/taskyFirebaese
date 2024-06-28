@@ -1,18 +1,19 @@
 import { Component } from '@angular/core';
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
-import { CommonModule } from '@angular/common'; // CommonModuleをインポート
+import { CommonModule } from '@angular/common';
+import { AuthService } from './core/services/auth.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule], // CommonModuleをインポートリストに追加
+  imports: [RouterOutlet, CommonModule],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
   title = 'todo-app';
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private authService: AuthService) {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         console.log('ナビゲーションが終了しました:', event.urlAfterRedirects);
@@ -21,7 +22,7 @@ export class AppComponent {
   }
 
   logClick(linkName: string, event: Event): void {
-    event.preventDefault(); // デフォルトのリンク挙動を防ぐ
+    event.preventDefault();
     const path = this.getPathFromLinkName(linkName);
     console.log(`${linkName}リンクがクリックされました`);
     this.router.navigate([path]).then(() => {
@@ -37,8 +38,20 @@ export class AppComponent {
         return '/projects';
       case 'タスク一覧':
         return '/tasks';
+      case 'プロフィール':  // プロフィールのパスを追加
+        return '/profile';
       default:
         return '/';
     }
+  }
+
+  logOut(): void {
+    this.authService.logout()
+      .then(() => {
+        this.router.navigate(['/login']);
+      })
+      .catch(error => {
+        console.error('ログアウトに失敗しました', error);
+      });
   }
 }

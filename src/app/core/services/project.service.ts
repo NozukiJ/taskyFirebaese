@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore'; // 修正
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Project } from '../models/project.model';
 import { Observable } from 'rxjs';
 
@@ -12,6 +12,10 @@ export class ProjectService {
 
   getProjects(): Observable<Project[]> {
     return this.firestore.collection<Project>('projects').valueChanges();
+  }
+
+  getProjectById(id: string): Observable<Project | undefined> {
+    return this.firestore.collection<Project>('projects').doc(id).valueChanges();
   }
 
   addProject(project: Project): Promise<void> {

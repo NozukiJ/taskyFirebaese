@@ -10,7 +10,7 @@
             <li *ngFor="let project of projects">
                 <div class="project-header">
                     <input type="checkbox" [(ngModel)]="project.selected" class="project-checkbox">
-                    <h3 contenteditable="true" (blur)="updateProjectName(project, $event)">{{ project.name }}</h3>
+                    <h3 (click)="openProjectDetailDialog(project)">{{ project.name }}</h3>
                 </div>
                 <ul class="task-list">
                     <li class="task-header">
@@ -46,7 +46,6 @@
             <!-- プロジェクトが割り当てられていないタスクを表示 -->
             <li>
                 <div class="project-header">
-                    <input type="checkbox" [(ngModel)]="noProjectSelected" class="project-checkbox">
                     <h3>プロジェクト無所属</h3>
                 </div>
                 <ul class="task-list">

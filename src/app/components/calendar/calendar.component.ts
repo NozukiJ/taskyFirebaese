@@ -77,7 +77,7 @@ export class CalendarComponent implements OnInit {
 
   loadEvents() {
     console.log("Loading events...");
-    this.taskService.getTasks().subscribe(tasks => {
+    this.taskService.getTasks().subscribe((tasks: Task[]) => { // Task[] 型を明示
       this.events = this.generateEventsFromTasks(tasks);
       console.log("Events loaded:", this.events);
       this.updateAllEvents();
@@ -276,10 +276,11 @@ export class CalendarComponent implements OnInit {
   handleEvent(action: string, event: CalendarEvent): void {
     console.log(`Event ${action} - ${event.title}`);
     if (event.meta) {
+      // 既存のダイアログを全て閉じる
+      this.dialog.closeAll();
+
       const dialogRef = this.dialog.open(TaskDetailComponent, {
         width: '600px',
-        maxHeight: '80vh',
-        panelClass: 'custom-dialog-container',
         data: { task: event.meta }
       });
 

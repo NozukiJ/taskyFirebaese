@@ -5,6 +5,8 @@
   background-color: #fff;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
+  overflow-y: auto; /* 縦方向のスクロールバーを有効にする */
+  height: calc(100vh - 40px); /* 画面全体の高さから適切な余白を引いた高さ */
 }
 
 .button-container {
@@ -60,4 +62,8 @@ h3 {
 .holiday-item { /* 共通クラスを作成 */
   font-weight: bold;
   color: #e3bc08;
+}
+
+.mwl-calendar-month-view, .mwl-calendar-week-view, .mwl-calendar-day-view {
+  height: calc(100vh - 160px); /* カレンダーの高さを調整してコンテナ内に収める */
 }

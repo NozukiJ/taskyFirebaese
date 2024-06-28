@@ -31,6 +31,7 @@ export class TaskListComponent implements OnInit {
   selectedPriority: string = '';
   selectedStatus: string = '全てのステータス';
   searchText: string = '';
+  sortOrder: string = 'startDateAsc';
 
   constructor(
     private taskService: TaskService,
@@ -42,13 +43,17 @@ export class TaskListComponent implements OnInit {
     this.tasks$ = this.taskService.getTasks();
     this.projects$ = this.projectService.getProjects();
 
-    this.tasks$.subscribe(tasks => {
-      this.tasks = tasks;
-      this.tags = this.getTags();
+    this.tasks$?.subscribe(tasks => { // Nullチェックを追加
+      if (tasks) { // tasks が null でないことを確認
+        this.tasks = tasks;
+        this.tags = this.getTags();
+      }
     });
 
-    this.projects$.subscribe(projects => {
-      this.projects = projects;
+    this.projects$?.subscribe(projects => { // Nullチェックを追加
+      if (projects) { // projects が null でないことを確認
+        this.projects = projects;
+      }
     });
   }
 
@@ -66,25 +71,33 @@ export class TaskListComponent implements OnInit {
     ).sort((a, b) => this.compareTasks(a, b));
   }
 
-  sortTasks(criteria: keyof Task) {
-    this.tasks.sort((a, b) => this.compareTasks(a, b, criteria));
+  sortTasks(criteria?: string) {
+    if (criteria) {
+      this.sortOrder = criteria;
+    }
+    this.tasks.sort((a, b) => this.compareTasks(a, b));
   }
 
-  compareTasks(a: Task, b: Task, criteria?: keyof Task): number {
+  compareTasks(a: Task, b: Task): number {
     const priorityOrder: { [key: string]: number } = { 'high': 1, 'medium': 2, 'low': 3, '': 4 };
 
-    if (criteria === 'priority') {
-      if (a.priority !== b.priority) {
-        return priorityOrder[a.priority] - priorityOrder[b.priority];
-      }
-      return new Date(a.endDateTime).getTime() - new Date(b.endDateTime).getTime();
+    switch (this.sortOrder) {
+      case 'startDateAsc':
+        return new Date(a.startDateTime).getTime() - new Date(b.startDateTime).getTime();
+      case 'startDateDesc':
+        return new Date(b.startDateTime).getTime() - new Date(a.startDateTime).getTime();
+      case 'endDateAsc':
+        return new Date(a.endDateTime).getTime() - new Date(b.endDateTime).getTime();
+      case 'endDateDesc':
+        return new Date(b.endDateTime).getTime() - new Date(a.endDateTime).getTime();
+      case 'priority':
+        if (a.priority !== b.priority) {
+          return priorityOrder[a.priority] - priorityOrder[b.priority];
+        }
+        return new Date(a.endDateTime).getTime() - new Date(b.endDateTime).getTime();
+      default:
+        return 0;
     }
-
-    if (criteria === 'endDateTime') {
-      return new Date(a.endDateTime).getTime() - new Date(b.endDateTime).getTime();
-    }
-
-    return 0;
   }
 
   drop(event: CdkDragDrop<Task[]>) {
@@ -135,8 +148,10 @@ export class TaskListComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.tasks$ = this.taskService.getTasks();
-        this.tasks$.subscribe(tasks => {
-          this.tasks = tasks;
+        this.tasks$?.subscribe(tasks => {
+          if (tasks) { // tasks が null でないことを確認
+            this.tasks = tasks;
+          }
         });
       }
     });
@@ -144,37 +159,44 @@ export class TaskListComponent implements OnInit {
 
   openAddProjectDialog() {
     const dialogRef = this.dialog.open(ProjectAddComponent, {
-      width: '400px'
+      width: '600px'
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.projects$ = this.projectService.getProjects();
-        this.projects$.subscribe(projects => {
-          this.projects = projects;
+        this.projects$?.subscribe(projects => {
+          if (projects) { // projects が null でないことを確認
+            this.projects = projects;
+          }
         });
       }
     });
   }
 
   openTaskDetailDialog(task: Task) {
+    // 既存のダイアログを全て閉じる
+    this.dialog.closeAll();
+
+    // 新しいタスク詳細ダイアログを開く
     const dialogRef = this.dialog.open(TaskDetailComponent, {
-      width: '400px',
+      width: '600px',
       data: { task }
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
+      if (result) {  // ダイアログがタスクを返した場合のみ更新
+        this.tasks = this.tasks.map(t => t.id === result.id ? result : t);
         this.saveTasks();
-        this.tasks$ = this.taskService.getTasks();
-        this.tasks$.subscribe(tasks => {
-          this.tasks = tasks;
-        });
       }
     });
   }
 
   openSubtaskDetailDialog(subtask: Subtask) {
+    // 既存のダイアログを全て閉じる
+    this.dialog.closeAll();
+
+    // 新しいサブタスク詳細ダイアログを開く
     const dialogRef = this.dialog.open(SubtaskDetailComponent, {
       width: '400px',
       data: { subtask }

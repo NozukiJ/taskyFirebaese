@@ -3,6 +3,9 @@
     <a routerLink="/calendar" class="nav-link" (click)="logClick('カレンダー', $event)">カレンダー</a>
     <a routerLink="/projects" class="nav-link" (click)="logClick('プロジェクト', $event)">プロジェクト</a>
     <a routerLink="/tasks" class="nav-link" (click)="logClick('タスク一覧', $event)">タスク一覧</a>
+    <a routerLink="/profile" class="nav-link" (click)="logClick('プロフィール', $event)">プロフィール</a> <!-- プロフィールリンクを追加 -->
+    <div class="spacer"></div>
+    <button class="logout-button" (click)="logOut()">ログアウト</button>
   </nav>
   <div class="content">
     <router-outlet></router-outlet>
