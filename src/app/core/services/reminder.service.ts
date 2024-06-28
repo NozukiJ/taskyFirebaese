@@ -1,4 +1,3 @@
-//src\app\core\services\reminder.service.ts
 import { Injectable } from '@angular/core';
 import { Task, Subtask } from '../models/task.model';
 

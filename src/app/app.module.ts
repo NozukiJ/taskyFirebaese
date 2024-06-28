@@ -7,13 +7,9 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { CalendarModule, DateAdapter } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
-
-// スタンドアロンコンポーネントのインポート
-import { AppComponent } from './app.component';
-import { TaskListComponent } from './components/task-list/task-list.component';
-import { TaskDetailComponent } from './components/task-detail/task-detail.component';
-import { CalendarComponent } from './components/calendar/calendar.component';
-import { ProjectTaskListComponent } from './components/project-list/project-list.component';
+import { AngularFireModule } from '@angular/fire/compat';
+import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
+import { environment } from '../environments/environment';
 
 @NgModule({
   imports: [
@@ -24,11 +20,8 @@ import { ProjectTaskListComponent } from './components/project-list/project-list
     HttpClientModule,
     AppRoutingModule,
     CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory }),
-    AppComponent,
-    TaskListComponent,
-    TaskDetailComponent,
-    CalendarComponent,
-    ProjectTaskListComponent
+    AngularFireModule.initializeApp(environment.firebaseConfig),
+    AngularFirestoreModule
   ],
   providers: []
 })

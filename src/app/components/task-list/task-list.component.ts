@@ -12,6 +12,7 @@ import { TaskDetailComponent } from '../task-detail/task-detail.component';
 import { SubtaskDetailComponent } from '../subtask-detail/subtask-detail.component';
 import { ProjectAddComponent } from '../project-add/project-add.component';
 import { Project } from '../../core/models/project.model';
+import { Observable } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -21,6 +22,8 @@ import { Project } from '../../core/models/project.model';
   styleUrls: ['./task-list.component.css']
 })
 export class TaskListComponent implements OnInit {
+  tasks$: Observable<Task[]> | null = null;
+  projects$: Observable<Project[]> | null = null;
   tasks: Task[] = [];
   projects: Project[] = [];
   tags: string[] = [];
@@ -36,9 +39,17 @@ export class TaskListComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.tasks = this.taskService.getTasks();
-    this.projects = this.projectService.getProjects();
-    this.tags = this.getTags();
+    this.tasks$ = this.taskService.getTasks();
+    this.projects$ = this.projectService.getProjects();
+
+    this.tasks$.subscribe(tasks => {
+      this.tasks = tasks;
+      this.tags = this.getTags();
+    });
+
+    this.projects$.subscribe(projects => {
+      this.projects = projects;
+    });
   }
 
   filteredTasks() {
@@ -78,7 +89,7 @@ export class TaskListComponent implements OnInit {
 
   drop(event: CdkDragDrop<Task[]>) {
     moveItemInArray(this.tasks, event.previousIndex, event.currentIndex);
-    this.taskService.saveTasks();
+    this.saveTasks();
   }
 
   getTags() {
@@ -95,7 +106,7 @@ export class TaskListComponent implements OnInit {
       task.subtasks = task.subtasks.filter(subtask => !subtask.selected);
       return true;
     });
-    this.taskService.saveTasks();
+    this.saveTasks();
   }
 
   getPriorityLabel(priority: string): string {
@@ -123,19 +134,25 @@ export class TaskListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.tasks = this.taskService.getTasks(); // 必要に応じて更新
+        this.tasks$ = this.taskService.getTasks();
+        this.tasks$.subscribe(tasks => {
+          this.tasks = tasks;
+        });
       }
     });
   }
 
-  openAddProjectDialog() { // 新しいプロジェクト追加ダイアログを開くメソッドを追加
+  openAddProjectDialog() {
     const dialogRef = this.dialog.open(ProjectAddComponent, {
       width: '400px'
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.projects = this.projectService.getProjects(); // プロジェクトリストを更新
+        this.projects$ = this.projectService.getProjects();
+        this.projects$.subscribe(projects => {
+          this.projects = projects;
+        });
       }
     });
   }
@@ -148,8 +165,11 @@ export class TaskListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.taskService.saveTasks();
-        this.tasks = this.taskService.getTasks();
+        this.saveTasks();
+        this.tasks$ = this.taskService.getTasks();
+        this.tasks$.subscribe(tasks => {
+          this.tasks = tasks;
+        });
       }
     });
   }
@@ -162,8 +182,15 @@ export class TaskListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.taskService.saveTasks();
+        this.saveTasks();
       }
     });
+  }
+
+  private saveTasks() {
+    // Firestoreのデータを更新するための処理
+    // 必要に応じてTaskServiceに保存する処理を追加します
+    // 例：this.taskService.updateTasks(this.tasks);
+    console.log('Tasks saved');
   }
 }

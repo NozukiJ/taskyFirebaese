@@ -1,4 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
+/* styles.css または styles.scss に追加 */
+@import "node_modules/angular-calendar/css/angular-calendar.css";
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;

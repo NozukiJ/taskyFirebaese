@@ -1,13 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Task, RepeatSettings } from '../../core/models/task.model';
 import { ReminderService } from '../../core/services/reminder.service';
 import { ProjectService } from '../../core/services/project.service';
-import { Project } from '../../core/models/project.model';
 import { TaskService } from '../../core/services/task.service';
-import { Inject } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Project } from '../../core/models/project.model'; // 追加
 
 @Component({
   standalone: true,
@@ -16,9 +16,10 @@ import { Inject } from '@angular/core';
   templateUrl: './task-add.component.html',
   styleUrls: ['./task-add.component.css']
 })
-export class TaskAddComponent {
+export class TaskAddComponent implements OnInit {
   colors: string[] = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'gray', 'black', 'white'];
   reminderUnits: string[] = ['分', '時間', '日', '週'];
+  projects$: Observable<Project[]> | null = null;
   projects: Project[] = [];
   excludeDate: string = '';
 
@@ -48,27 +49,35 @@ export class TaskAddComponent {
       unit: '分'
     }
   };
-  
 
   constructor(
     public dialogRef: MatDialogRef<TaskAddComponent>,
     private reminderService: ReminderService,
     private projectService: ProjectService,
-    @Inject(TaskService) private taskService: TaskService
-  ) {
-    this.projects = this.projectService.getProjects();
+    private taskService: TaskService
+  ) {}
+
+  ngOnInit(): void {
+    this.projects$ = this.projectService.getProjects();
+    this.projects$.subscribe(projects => {
+      this.projects = projects;
+    });
   }
 
-  saveTask() {
-    if (this.newTask.startDateTime && this.newTask.reminderTime && this.newTask.reminderTime.value !== null) {
-      const timeBeforeStart = this.calculateReminderTime({
-        value: this.newTask.reminderTime.value,
-        unit: this.newTask.reminderTime.unit
-      });
-      this.reminderService.setReminder(this.newTask, timeBeforeStart);
+  async saveTask() {
+    try {
+      if (this.newTask.startDateTime && this.newTask.reminderTime && this.newTask.reminderTime.value !== null) {
+        const timeBeforeStart = this.calculateReminderTime({
+          value: this.newTask.reminderTime.value,
+          unit: this.newTask.reminderTime.unit
+        });
+        this.reminderService.setReminder(this.newTask, timeBeforeStart);
+      }
+      await this.taskService.addTask(this.newTask);
+      this.dialogRef.close(this.newTask);
+    } catch (error) {
+      console.error('Failed to save task:', error);
     }
-    this.taskService.addTask(this.newTask);
-    this.dialogRef.close(this.newTask);
   }
 
   cancel() {

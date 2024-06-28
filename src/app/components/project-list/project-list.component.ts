@@ -1,26 +1,25 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { TaskService } from '../../core/services/task.service';
 import { ProjectService } from '../../core/services/project.service';
-import { TaskAddComponent } from '../task-add/task-add.component';
-import { TaskDetailComponent } from '../task-detail/task-detail.component';
-import { ProjectAddComponent } from '../project-add/project-add.component';
-import { Project } from '../../core/models/project.model';
 import { Task } from '../../core/models/task.model';
+import { Project } from '../../core/models/project.model';
+import { TaskAddComponent } from '../task-add/task-add.component';
+import { ProjectAddComponent } from '../project-add/project-add.component';
+import { TaskDetailComponent } from '../task-detail/task-detail.component';
 
 @Component({
-  selector: 'app-project-task-list',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
+  selector: 'app-project-list',
   templateUrl: './project-list.component.html',
-  styleUrls: ['./project-list.component.css']
+  styleUrls: ['./project-list.component.css'],
+  standalone: true,
+  imports: [CommonModule, FormsModule]
 })
-export class ProjectTaskListComponent implements OnInit {
-  tasks: Task[] = [];
+export class ProjectListComponent implements OnInit {
   projects: Project[] = [];
-  tags: string[] = [];
+  tasks: Task[] = [];
   noProjectSelected: boolean = false;
 
   constructor(
@@ -30,47 +29,84 @@ export class ProjectTaskListComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.tasks = this.taskService.getTasks();
-    this.projects = this.projectService.getProjects().map(project => ({
-      ...project,
-      selected: false  // 初期値を設定
-    }));
-    this.tags = this.getTags();
+    this.loadProjects();
+    this.loadTasks();
   }
 
-  getTasksForProject(projectId: string): Task[] {
-    if (projectId === '') {
-      return this.tasks.filter(task => !task.projectId);
-    }
-    return this.tasks.filter(task => task.projectId === projectId);
+  loadProjects() {
+    this.projectService.getProjects().subscribe(projects => {
+      this.projects = projects;
+    });
   }
 
-  getTags() {
-    const tags = this.tasks.map(task => task.tag);
-    return Array.from(new Set(tags)).filter(tag => tag !== '');
+  loadTasks() {
+    this.taskService.getTasks().subscribe(tasks => {
+      this.tasks = tasks;
+    });
+  }
+
+  openAddTaskDialog() {
+    const dialogRef = this.dialog.open(TaskAddComponent, {
+      width: '400px'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadTasks();
+      }
+    });
+  }
+
+  openAddProjectDialog() {
+    const dialogRef = this.dialog.open(ProjectAddComponent, {
+      width: '400px'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadProjects();
+      }
+    });
   }
 
   deleteSelectedTasks() {
-    this.tasks = this.tasks.filter(task => {
-      if (task.selected) {
-        this.taskService.deleteTask(task);
-        return false;
-      }
-      task.subtasks = task.subtasks.filter(subtask => !subtask.selected);
-      return true;
+    const selectedTasks = this.tasks.filter(task => task.selected);
+    selectedTasks.forEach(task => {
+      this.taskService.deleteTask(task).then(() => {
+        this.loadTasks();
+      });
     });
-    this.taskService.saveTasks();
   }
 
   deleteSelectedProjects() {
-    this.projects = this.projects.filter(project => {
-      if (project.selected) {
-        this.projectService.deleteProject(project);
-        return false;
-      }
-      return true;
+    const selectedProjects = this.projects.filter(project => project.selected);
+    selectedProjects.forEach(project => {
+      this.projectService.deleteProject(project).then(() => {
+        this.loadProjects();
+      });
     });
-    this.tasks = this.taskService.getTasks();  // 更新されたプロジェクトに基づいてタスクを再取得
+  }
+
+  updateProjectName(project: Project, event: any) {
+    project.name = event.target.innerText;
+    this.projectService.updateProject(project);
+  }
+
+  getTasksForProject(projectId: string): Task[] {
+    return this.tasks.filter(task => task.projectId === projectId);
+  }
+
+  openTaskDetailDialog(task: Task) {
+    const dialogRef = this.dialog.open(TaskDetailComponent, {
+      width: '400px',
+      data: { task }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadTasks();
+      }
+    });
   }
 
   getPriorityLabel(priority: string): string {
@@ -84,51 +120,5 @@ export class ProjectTaskListComponent implements OnInit {
       default:
         return priority;
     }
-  }
-
-  updateProjectName(project: Project, event: Event) {
-    const newName = (event.target as HTMLElement).innerText;
-    if (newName.trim() && newName !== project.name) {
-      project.name = newName.trim();
-      this.projectService.updateProject(project); // プロジェクトの名前を更新
-    }
-  }
-
-  openAddTaskDialog() {
-    const dialogRef = this.dialog.open(TaskAddComponent, {
-      width: '400px'
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.tasks = this.taskService.getTasks();
-      }
-    });
-  }
-
-  openAddProjectDialog() {
-    const dialogRef = this.dialog.open(ProjectAddComponent, {
-      width: '400px'
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.projects = this.projectService.getProjects();
-      }
-    });
-  }
-
-  openTaskDetailDialog(task: Task) {
-    const dialogRef = this.dialog.open(TaskDetailComponent, {
-      width: '400px',
-      data: { task }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.taskService.saveTasks();
-        this.tasks = this.taskService.getTasks();
-      }
-    });
   }
 }

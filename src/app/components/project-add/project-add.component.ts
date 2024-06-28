@@ -30,9 +30,13 @@ export class ProjectAddComponent {
     private projectService: ProjectService
   ) {}
 
-  saveProject() {
-    this.projectService.addProject(this.newProject);
-    this.dialogRef.close(this.newProject);
+  async saveProject() {
+    try {
+      await this.projectService.addProject(this.newProject);
+      this.dialogRef.close(this.newProject);
+    } catch (error) {
+      console.error('Error saving project:', error);
+    }
   }
 
   cancel() {

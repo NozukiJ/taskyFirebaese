@@ -11,6 +11,7 @@ import { TaskDetailComponent } from '../task-detail/task-detail.component';
 import { Task } from '../../core/models/task.model';
 import { addDays, addWeeks, addMonths, addYears, startOfWeek, endOfWeek, isSameWeek as isSameWeekFn, isSameDay as isSameDayFn, lastDayOfMonth, subDays, isWeekend, set } from 'date-fns';
 import { from } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Component({
   standalone: true,
@@ -76,10 +77,11 @@ export class CalendarComponent implements OnInit {
 
   loadEvents() {
     console.log("Loading events...");
-    const tasks = this.taskService.getTasks();
-    this.events = this.generateEventsFromTasks(tasks);
-    console.log("Events loaded:", this.events);
-    this.updateAllEvents();
+    this.taskService.getTasks().subscribe(tasks => {
+      this.events = this.generateEventsFromTasks(tasks);
+      console.log("Events loaded:", this.events);
+      this.updateAllEvents();
+    });
   }
 
   generateEventsFromTasks(tasks: Task[]): CalendarEvent[] {
@@ -284,8 +286,9 @@ export class CalendarComponent implements OnInit {
       dialogRef.afterClosed().subscribe((result: Task) => {
         if (result) {
           console.log('Event details updated:', result);
-          this.taskService.saveTasks();
-          this.loadEvents();
+          this.taskService.updateTask(result).then(() => {
+            this.loadEvents();
+          });
         }
       });
     }

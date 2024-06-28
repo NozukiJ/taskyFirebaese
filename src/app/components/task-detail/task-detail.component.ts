@@ -7,6 +7,7 @@ import { ReminderService } from '../../core/services/reminder.service';
 import { ProjectService } from '../../core/services/project.service';
 import { Task, Subtask, RepeatSettings } from '../../core/models/task.model';
 import { Project } from '../../core/models/project.model';
+import { Observable } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -19,6 +20,7 @@ export class TaskDetailComponent implements OnInit {
   @Input() task!: Task;
   colors: string[] = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'gray', 'black', 'white'];
   reminderUnits: string[] = ['分', '時間', '日', '週'];
+  projects$: Observable<Project[]> | null = null;
   projects: Project[] = [];
   excludeDate: string = '';
 
@@ -35,7 +37,11 @@ export class TaskDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.projects = this.projectService.getProjects();
+    this.projects$ = this.projectService.getProjects();
+    this.projects$.subscribe(projects => {
+      this.projects = projects;
+    });
+
     if (!this.task) {
       this.task = {
         id: '',
@@ -70,9 +76,8 @@ export class TaskDetailComponent implements OnInit {
       }
     }
   }
-  
 
-  saveTask() {
+  async saveTask() {
     if (this.task.reminderTime && this.task.reminderTime.value !== null) {
       const timeBeforeStart = this.calculateReminderTime({
         value: this.task.reminderTime.value,
@@ -80,12 +85,12 @@ export class TaskDetailComponent implements OnInit {
       });
       this.reminderService.setReminder(this.task, timeBeforeStart);
     }
-    this.taskService.saveTasks();
+    await this.taskService.addTask(this.task); // Firestoreに保存
     this.dialogRef.close();
   }
 
-  duplicateTask() {
-    this.taskService.duplicateTask(this.task);
+  async duplicateTask() {
+    await this.taskService.duplicateTask(this.task); // Firestoreに複製
     this.dialogRef.close();
   }
 

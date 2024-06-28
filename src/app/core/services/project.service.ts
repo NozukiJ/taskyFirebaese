@@ -1,54 +1,37 @@
-import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { Injectable } from '@angular/core';
+import { AngularFirestore } from '@angular/fire/compat/firestore'; // 修正
 import { Project } from '../models/project.model';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProjectService {
-  private projects: Project[] = [];
 
-  constructor(@Inject(PLATFORM_ID) private platformId: any) {
-    if (isPlatformBrowser(this.platformId)) {
-      const savedProjects = localStorage.getItem('projects');
-      if (savedProjects) {
-        try {
-          this.projects = JSON.parse(savedProjects);
-        } catch (error) {
-          console.error("Invalid JSON data in localStorage:", error);
-          this.projects = [];
-        }
-      }
-    }
+  constructor(private firestore: AngularFirestore) {}
+
+  getProjects(): Observable<Project[]> {
+    return this.firestore.collection<Project>('projects').valueChanges();
   }
 
-  getProjects(): Project[] {
-    return this.projects;
+  addProject(project: Project): Promise<void> {
+    const id = this.firestore.createId();
+    return this.firestore.collection('projects').doc(id).set({ ...project, id });
   }
 
-  addProject(project: Project) {
-    this.projects.push(project);
-    this.saveProjects();
-  }
-
-  updateProject(updatedProject: Project) {
-    const index = this.projects.findIndex(project => project.id === updatedProject.id);
-    if (index !== -1) {
-      this.projects[index] = updatedProject;
-      this.saveProjects();
+  updateProject(updatedProject: Project): Promise<void> {
+    if (updatedProject.id) {
+      return this.firestore.collection('projects').doc(updatedProject.id).set(updatedProject);
     } else {
-      console.error('Project not found:', updatedProject);
+      return Promise.reject('Project ID is missing');
     }
   }
 
-  saveProjects() {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem('projects', JSON.stringify(this.projects));
+  deleteProject(project: Project): Promise<void> {
+    if (project.id) {
+      return this.firestore.collection('projects').doc(project.id).delete();
+    } else {
+      return Promise.reject('Project ID is missing');
     }
-  }
-
-  deleteProject(project: Project) {
-    this.projects = this.projects.filter(p => p.id !== project.id);
-    this.saveProjects();
   }
 }
