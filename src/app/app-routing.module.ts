@@ -8,20 +8,22 @@ import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { ProfileComponent } from './components/profile/profile.component';
-import { ProjectDetailComponent } from './components/project-detail/project-detail.component'; // 新しいコンポーネントをインポート
+import { ProjectDetailComponent } from './components/project-detail/project-detail.component';
+import { UserSearchComponent } from './components/user-search/user-search.component'; // 新しいコンポーネントをインポート
 import { AuthGuard } from './core/guards/auth.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: '/calendar', pathMatch: 'full' },
   { path: 'calendar', component: CalendarComponent, canActivate: [AuthGuard] },
   { path: 'projects', component: ProjectListComponent, canActivate: [AuthGuard] },
-  { path: 'project/:id', component: ProjectDetailComponent, canActivate: [AuthGuard] }, // 新しいルートを追加
+  { path: 'project/:id', component: ProjectDetailComponent, canActivate: [AuthGuard] },
   { path: 'tasks', component: TaskListComponent, canActivate: [AuthGuard] },
   { path: 'task/:id', component: TaskDetailComponent, canActivate: [AuthGuard] },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'reset-password', component: ResetPasswordComponent },
-  { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] }
+  { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
+  { path: 'user-search', component: UserSearchComponent, canActivate: [AuthGuard] } // 新しいルートを追加
 ];
 
 @NgModule({

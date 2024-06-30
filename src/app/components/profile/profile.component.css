@@ -1,5 +1,6 @@
-div {
-    max-width: 600px;
+.profile-container {
+    width: 800px; /* 横幅を大きくする */
+    max-width: 100%; /* ビューポートに応じて調整 */
     margin: 0 auto;
     padding: 20px;
     border: 1px solid #ccc;
@@ -13,11 +14,11 @@ div {
   }
   
   form {
-    display: flex;
-    flex-direction: column;
+    display: block; /* フレックスを解除 */
   }
   
   label {
+    display: block; /* フレックスを解除 */
     margin: 10px 0 5px;
     font-weight: bold;
     color: #555;
@@ -27,6 +28,7 @@ div {
   input[type="email"],
   textarea,
   input[type="file"] {
+    display: block; /* フレックスを解除 */
     padding: 10px;
     margin-bottom: 10px;
     border: 1px solid #ccc;
@@ -36,6 +38,7 @@ div {
   }
   
   button {
+    display: inline-block; /* フレックスを解除 */
     padding: 10px 20px;
     background-color: #4CAF50;
     color: white;

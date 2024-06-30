@@ -1,0 +1,14 @@
+<div>
+    <input type="text" [(ngModel)]="searchTerm" placeholder="メールアドレス、ユーザーID、ユーザー名で検索" />
+    <button (click)="searchUsers()">検索</button>
+  
+    <ul>
+      <li *ngFor="let user of users">
+        <input type="checkbox" [(ngModel)]="user.selected" /> <!-- チェックボックスを追加 -->
+        {{ user.displayName }} ({{ user.email }})
+      </li>
+    </ul>
+  
+    <button (click)="selectUsers()">選択したユーザーを追加</button>
+  </div>
+  

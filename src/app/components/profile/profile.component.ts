@@ -15,6 +15,7 @@ import { RouterModule } from '@angular/router';
 export class ProfileComponent implements OnInit {
   user: any = {}; // 実際のユーザーデータをここに格納
   profile: any = { displayName: '', bio: '', email: '', company: '', position: '', team: '' }; // フォームバインディング用
+  userId: string = ''; // ユーザーIDを格納するプロパティ
   message: string = ''; // メッセージを格納するプロパティ
 
   constructor(private authService: AuthService, private firestore: AngularFirestore) {}
@@ -22,6 +23,7 @@ export class ProfileComponent implements OnInit {
   ngOnInit(): void {
     this.authService.user$.subscribe(user => {
       if (user) {
+        this.userId = user.uid; // ユーザーIDを格納
         this.firestore.collection('users').doc(user.uid).valueChanges().subscribe(userData => {
           if (userData && typeof userData === 'object') {
             this.user = user;

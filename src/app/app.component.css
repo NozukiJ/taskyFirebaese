@@ -11,12 +11,21 @@
   padding: 10px;
 }
 
+.side-nav nav ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.side-nav nav ul li {
+  margin-bottom: 10px;
+}
+
 .nav-link {
   text-decoration: none;
   padding: 10px;
   color: #000;
-  margin-bottom: 10px;
   border-radius: 4px;
+  display: block;
 }
 
 .nav-link:hover {

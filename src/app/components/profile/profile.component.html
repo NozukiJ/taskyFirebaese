@@ -1,6 +1,9 @@
-<div>
+<div class="profile-container">
     <h2>プロフィール</h2>
     <form (ngSubmit)="updateProfile()">
+      <label for="userId">ユーザーID:</label>
+      <input type="text" [value]="userId" name="userId" disabled> <!-- ユーザーIDを表示 -->
+  
       <label for="username">ユーザー名:</label>
       <input type="text" [(ngModel)]="profile.displayName" name="username" required>
   

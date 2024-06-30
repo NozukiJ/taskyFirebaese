@@ -1,3 +1,4 @@
+// src/app/components/project-add/project-add.component.ts
 import { Component } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
@@ -22,7 +23,8 @@ export class ProjectAddComponent {
     startDate: '',
     endDate: '',
     color: 'white',
-    tasks: []
+    tasks: [],
+    members: [] // membersプロパティを追加
   };
 
   constructor(

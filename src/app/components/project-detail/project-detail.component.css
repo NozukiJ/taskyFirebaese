@@ -1,17 +1,50 @@
 .color-dropdown {
     display: flex;
     flex-wrap: wrap;
-  }
-  
-  .color-option {
-    width: 20px;
-    height: 20px;
-    margin: 2px;
+    gap: 5px;
+    max-width: 100%;
+    justify-content: center;
+}
+
+.color-option {
+    width: 30px;
+    height: 30px;
+    margin: 5px;
     cursor: pointer;
-  }
-  
-  button {
-    margin-top: 10px;
-    margin-right: 5px;
-  }
-  
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.color-option:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+button {
+    margin: 10px 5px 0 0;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    background-color: #d3d3d3;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: #bbb;
+}
+
+.project-detail-container {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    box-sizing: border-box;
+    max-width: 1000px;
+    margin: 0 auto;
+    overflow-y: auto;
+    max-height: 80vh; /* 画面に収まるように最大高さを設定 */
+}

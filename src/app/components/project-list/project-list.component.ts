@@ -4,12 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { TaskService } from '../../core/services/task.service';
 import { ProjectService } from '../../core/services/project.service';
+import { UserService } from '../../core/services/user.service';
 import { Task } from '../../core/models/task.model';
 import { Project } from '../../core/models/project.model';
+import { User } from '../../core/models/user.model';
 import { TaskAddComponent } from '../task-add/task-add.component';
 import { ProjectAddComponent } from '../project-add/project-add.component';
 import { TaskDetailComponent } from '../task-detail/task-detail.component';
-import { ProjectDetailComponent } from '../project-detail/project-detail.component'; // 追加
+import { ProjectDetailComponent } from '../project-detail/project-detail.component';
 
 @Component({
   selector: 'app-project-list',
@@ -21,11 +23,13 @@ import { ProjectDetailComponent } from '../project-detail/project-detail.compone
 export class ProjectListComponent implements OnInit {
   projects: Project[] = [];
   tasks: Task[] = [];
+  membersMap: { [key: string]: User } = {};
   noProjectSelected: boolean = false;
 
   constructor(
     private taskService: TaskService,
     private projectService: ProjectService,
+    private userService: UserService,
     public dialog: MatDialog
   ) {}
 
@@ -37,12 +41,28 @@ export class ProjectListComponent implements OnInit {
   loadProjects() {
     this.projectService.getProjects().subscribe(projects => {
       this.projects = projects;
+      this.loadMembers();
     });
   }
 
   loadTasks() {
-    this.taskService.getTasks().subscribe((tasks: Task[]) => { // Task[] 型を明示
+    this.taskService.getTasks().subscribe((tasks: Task[]) => {
       this.tasks = tasks;
+    });
+  }
+
+  loadMembers() {
+    const memberIds = this.projects.flatMap(project => project.members);
+    const uniqueMemberIds = Array.from(new Set(memberIds));
+    console.log('Unique member IDs:', uniqueMemberIds); // デバッグ用
+
+    uniqueMemberIds.forEach(memberId => {
+      this.userService.getUserById(memberId).subscribe(user => {
+        if (user) {
+          this.membersMap[memberId] = user;
+          console.log('User fetched:', user); // デバッグ用
+        }
+      });
     });
   }
 

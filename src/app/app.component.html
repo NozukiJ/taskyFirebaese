@@ -1,12 +1,17 @@
 <div class="app-container">
-  <nav class="side-nav">
-    <a routerLink="/calendar" class="nav-link" (click)="logClick('カレンダー', $event)">カレンダー</a>
-    <a routerLink="/projects" class="nav-link" (click)="logClick('プロジェクト', $event)">プロジェクト</a>
-    <a routerLink="/tasks" class="nav-link" (click)="logClick('タスク一覧', $event)">タスク一覧</a>
-    <a routerLink="/profile" class="nav-link" (click)="logClick('プロフィール', $event)">プロフィール</a> <!-- プロフィールリンクを追加 -->
+  <div class="side-nav">
+    <nav>
+      <ul>
+        <li><a [routerLink]="['/calendar']" class="nav-link">カレンダー</a></li>
+        <li><a [routerLink]="['/projects']" class="nav-link">プロジェクト</a></li>
+        <li><a [routerLink]="['/tasks']" class="nav-link">タスク一覧</a></li>
+        <li><a [routerLink]="['/profile']" class="nav-link">プロフィール</a></li>
+        <li><a [routerLink]="['/user-search']" class="nav-link">ユーザー検索</a></li> <!-- 新しいリンクを追加 -->
+      </ul>
+    </nav>
     <div class="spacer"></div>
-    <button class="logout-button" (click)="logOut()">ログアウト</button>
-  </nav>
+    <button (click)="logOut()" class="logout-button">ログアウト</button>
+  </div>
   <div class="content">
     <router-outlet></router-outlet>
   </div>
