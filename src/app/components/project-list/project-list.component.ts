@@ -219,4 +219,8 @@ export class ProjectListComponent implements OnInit {
         return priority;
     }
   }
+
+  canEdit(project: Project): boolean {
+    return !!this.currentUserUid && project.owners.includes(this.currentUserUid);
+  }
 }

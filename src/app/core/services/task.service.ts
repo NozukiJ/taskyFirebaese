@@ -1,11 +1,14 @@
+// src\app\core\services\task.service.ts
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Task } from '../models/task.model';
 import { HolidayService } from './holiday.service';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { TaskDetailComponent } from '../../components/task-detail/task-detail.component';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { endOfMonth, subDays } from 'date-fns';
+import { AuthService } from './auth.service';
+import { switchMap, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -16,29 +19,134 @@ export class TaskService {
   constructor(
     private firestore: AngularFirestore,
     private holidayService: HolidayService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private authService: AuthService
   ) {}
 
-  getTasks(): Observable<Task[]> {
-    return this.firestore.collection<Task>('tasks').valueChanges();
+  getCurrentUserId(): string | null {
+    return this.authService.getCurrentUserId();
   }
 
-  addTask(task: Task): Promise<void> {
-    const id = this.firestore.createId();
-    return this.firestore.collection('tasks').doc(id).set({ ...task, id });
+  getUserTasks(): Observable<Task[]> {
+    return this.authService.user$.pipe(
+      switchMap(user => {
+        if (user) {
+          return this.firestore
+            .collection<Task>(`users/${user.uid}/tasks`)
+            .snapshotChanges()
+            .pipe(
+              map(actions => actions.map(a => {
+                const data = a.payload.doc.data() as Task;
+                const id = a.payload.doc.id;
+                const task: Task = {
+                  id: id,
+                  title: data.title,
+                  completed: data.completed,
+                  description: data.description,
+                  priority: data.priority,
+                  startDateTime: data.startDateTime,
+                  endDateTime: data.endDateTime,
+                  tag: data.tag,
+                  selected: data.selected,
+                  tagColor: data.tagColor,
+                  status: data.status,
+                  subtasks: data.subtasks,
+                  reminderTime: data.reminderTime,
+                  projectId: data.projectId,
+                  repeatSettings: data.repeatSettings,
+                  userId: data.userId
+                };
+                return task;
+              }))
+            );
+        } else {
+          return of([]);
+        }
+      })
+    );
+  }
+
+  getTasks(): Observable<Task[]> {
+    const userId = this.getCurrentUserId();
+    if (userId) {
+      return this.firestore.collection<Task>(`users/${userId}/tasks`).valueChanges();
+    } else {
+      return of([]);
+    }
+  }
+
+  addTask(task: Omit<Task, 'id'>): Promise<void> {
+    const userId = this.getCurrentUserId();
+    if (userId) {
+      const id = this.firestore.createId();
+      const taskWithId: Task = {
+        id: id,
+        title: task.title,
+        completed: task.completed,
+        description: task.description,
+        priority: task.priority,
+        startDateTime: task.startDateTime,
+        endDateTime: task.endDateTime,
+        tag: task.tag,
+        selected: task.selected,
+        tagColor: task.tagColor,
+        status: task.status,
+        subtasks: task.subtasks,
+        reminderTime: task.reminderTime,
+        projectId: task.projectId,
+        repeatSettings: task.repeatSettings,
+        userId: userId
+      };
+      return this.firestore.collection(`users/${userId}/tasks`).doc(id).set(taskWithId);
+    } else {
+      return Promise.reject('User not authenticated');
+    }
   }
 
   updateTask(task: Task): Promise<void> {
-    return this.firestore.collection('tasks').doc(task.id).set(task);
+    const userId = this.getCurrentUserId();
+    if (userId) {
+      return this.firestore.collection(`users/${userId}/tasks`).doc(task.id).set(task);
+    } else {
+      return Promise.reject('User not authenticated');
+    }
   }
 
   duplicateTask(task: Task): Promise<void> {
-    const newTask: Task = { ...task, id: this.generateId() };
-    return this.firestore.collection('tasks').doc(newTask.id).set(newTask);
+    const userId = this.getCurrentUserId();
+    if (userId) {
+      const newTaskId = this.generateId();
+      const newTask: Task = {
+        id: newTaskId,
+        title: task.title,
+        completed: task.completed,
+        description: task.description,
+        priority: task.priority,
+        startDateTime: task.startDateTime,
+        endDateTime: task.endDateTime,
+        tag: task.tag,
+        selected: task.selected,
+        tagColor: task.tagColor,
+        status: task.status,
+        subtasks: task.subtasks,
+        reminderTime: task.reminderTime,
+        projectId: task.projectId,
+        repeatSettings: task.repeatSettings,
+        userId: userId
+      };
+      return this.firestore.collection(`users/${userId}/tasks`).doc(newTaskId).set(newTask);
+    } else {
+      return Promise.reject('User not authenticated');
+    }
   }
 
   deleteTask(task: Task): Promise<void> {
-    return this.firestore.collection('tasks').doc(task.id).delete();
+    const userId = this.getCurrentUserId();
+    if (userId) {
+      return this.firestore.collection(`users/${userId}/tasks`).doc(task.id).delete();
+    } else {
+      return Promise.reject('User not authenticated');
+    }
   }
 
   openTaskDetail(task: Task) {
@@ -113,8 +221,26 @@ export class TaskService {
   }
 
   private createTaskInstance(task: Task, date: string) {
-    const newTask: Task = { ...task, startDateTime: date, id: this.generateId() };
-    this.firestore.collection('tasks').doc(newTask.id).set(newTask);
+    const newTaskId = this.generateId();
+    const newTask: Task = {
+      id: newTaskId,
+      title: task.title,
+      completed: task.completed,
+      description: task.description,
+      priority: task.priority,
+      startDateTime: date,
+      endDateTime: task.endDateTime,
+      tag: task.tag,
+      selected: task.selected,
+      tagColor: task.tagColor,
+      status: task.status,
+      subtasks: task.subtasks,
+      reminderTime: task.reminderTime,
+      projectId: task.projectId,
+      repeatSettings: task.repeatSettings,
+      userId: task.userId
+    };
+    this.firestore.collection(`users/${task.userId}/tasks`).doc(newTaskId).set(newTask);
   }
 
   private generateId(): string {

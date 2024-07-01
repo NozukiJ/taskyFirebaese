@@ -9,7 +9,7 @@
     <ul>
       <li *ngFor="let project of projects">
         <div class="project-header">
-          <input type="checkbox" [(ngModel)]="project.selected" class="project-checkbox">
+          <input type="checkbox" [(ngModel)]="project.selected" class="project-checkbox" [disabled]="!canEdit(project)">
           <h3 (click)="openProjectDetailDialog(project)">{{ project.name }}</h3>
         </div>
         <p>オーナー:</p>
@@ -39,7 +39,7 @@
           </li>
           <li class="task-item" *ngFor="let task of getTasksForProject(project.id)">
             <div class="task-item-content">
-              <input type="checkbox" [(ngModel)]="task.selected" class="task-checkbox">
+              <input type="checkbox" [(ngModel)]="task.selected" class="task-checkbox" [disabled]="!canEdit(project)">
               <a (click)="openTaskDetailDialog(task)" class="task-link">
                 <div class="task-title">{{ task.title }}</div>
                 <div class="task-details">

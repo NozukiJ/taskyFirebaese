@@ -71,8 +71,13 @@ export class TaskDetailComponent implements OnInit {
         reminderTime: {
           value: null,
           unit: '分'
-        }
+        },
+        userId: '' // 追加
       };
+      const userId = this.taskService.getCurrentUserId();
+      if (userId) {
+        this.task.userId = userId;
+      }
       console.log('Initialized empty task');
     } else {
       if (!this.task.reminderTime) {

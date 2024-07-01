@@ -47,7 +47,8 @@ export class TaskAddComponent implements OnInit {
     reminderTime: {
       value: 0,
       unit: '分'
-    }
+    },
+    userId: '' // 追加
   };
 
   constructor(
@@ -62,6 +63,10 @@ export class TaskAddComponent implements OnInit {
     this.projects$.subscribe(projects => {
       this.projects = projects;
     });
+    const userId = this.taskService.getCurrentUserId();
+    if (userId) {
+      this.newTask.userId = userId;
+    }
   }
 
   async saveTask() {

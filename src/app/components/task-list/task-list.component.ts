@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+// src\app\components\task-list\task-list.component.ts
+import { Component, OnInit, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -34,8 +35,8 @@ export class TaskListComponent implements OnInit {
   sortOrder: string = 'startDateAsc';
 
   constructor(
-    private taskService: TaskService,
-    private projectService: ProjectService,
+    @Inject(TaskService) private taskService: TaskService,
+    @Inject(ProjectService) private projectService: ProjectService,
     public dialog: MatDialog
   ) {}
 

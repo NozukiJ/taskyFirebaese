@@ -1,3 +1,4 @@
+// src\app\core\services\auth.service.ts
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
@@ -51,7 +52,12 @@ export class AuthService {
     return this.firestore.collection('users').doc(uid).valueChanges();
   }
 
-  getCurrentUser(): Observable<firebase.User | null> {
-    return this.afAuth.authState;
+  getCurrentUser(): firebase.User | null {
+    return firebase.auth().currentUser;
+  }
+
+  getCurrentUserId(): string | null {
+    const user = this.getCurrentUser();
+    return user ? user.uid : null;
   }
 }
