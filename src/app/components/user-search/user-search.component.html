@@ -5,7 +5,7 @@
     <ul>
       <li *ngFor="let user of users">
         <input type="checkbox" [(ngModel)]="user.selected" /> <!-- チェックボックスを追加 -->
-        {{ user.displayName }} ({{ user.email }})
+        {{ user.displayName }} {{ user.email }}
       </li>
     </ul>
   

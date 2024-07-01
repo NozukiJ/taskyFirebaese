@@ -1,4 +1,4 @@
-// src/app/core/models/project.model.ts
+// src\app\core\models\project.model.ts
 export interface Project {
   id: string;
   name: string;
@@ -8,5 +8,6 @@ export interface Project {
   color: string;
   tasks: string[]; // タスクのIDの配列
   members: string[]; // プロジェクトに参加するユーザーのIDリスト
+  owners: string[]; // プロジェクトのオーナーのIDリスト
   selected?: boolean; // 追加
 }

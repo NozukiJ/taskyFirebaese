@@ -1,13 +1,35 @@
+.project-detail-container {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  box-sizing: border-box;
+  max-width: 1000px;
+  margin: 0 auto;
+  max-height: 80vh; /* 画面に収まるように最大高さを設定 */
+  overflow-y: auto; /* 垂直方向にスクロール可能にする */
+}
+
 .color-dropdown {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-  }
-  
-  .color-option {
-    width: 24px;
-    height: 24px;
-    cursor: pointer;
-    border-radius: 4px;
-  }
-  
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  max-width: 100%;
+  justify-content: center;
+}
+
+.color-option {
+  width: 30px;
+  height: 30px;
+  margin: 5px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.color-option:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}

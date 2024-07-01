@@ -1,9 +1,9 @@
-// src/app/core/services/auth.service.ts
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Observable } from 'rxjs';
 import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
 
 @Injectable({
   providedIn: 'root'
@@ -47,8 +47,11 @@ export class AuthService {
     }
   }
 
-  // ユーザーIDからユーザー情報を取得
   getUserById(uid: string): Observable<any> {
     return this.firestore.collection('users').doc(uid).valueChanges();
+  }
+
+  getCurrentUser(): Observable<firebase.User | null> {
+    return this.afAuth.authState;
   }
 }

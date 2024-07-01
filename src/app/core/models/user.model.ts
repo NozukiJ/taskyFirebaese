@@ -1,3 +1,4 @@
+// src\app\core\models\user.model.ts
 export interface User {
     id?: string; // 追加：FirebaseのドキュメントID
     uid: string; // ユーザーID

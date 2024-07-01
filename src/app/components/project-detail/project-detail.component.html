@@ -1,16 +1,30 @@
-<div>
-    <h2>{{ project.name }}</h2>
-    <p>{{ project.description }}</p>
-  
-    <h3>メンバー</h3>
-    <ul>
-      <li *ngFor="let member of members">{{ member.displayName }}</li>
-    </ul>
-  
-    <h3>メンバー追加</h3>
-    <app-user-search (userSelected)="addMembers($event)"></app-user-search>
-  
+<div class="project-detail-container">
+  <h3>{{ project.name }}</h3>
+  <div *ngIf="isOwner">
     <button (click)="updateProject()">保存</button>
     <button (click)="cancel()">キャンセル</button>
   </div>
-  
+  <p>{{ project.description }}</p>
+
+  <h4>オーナー</h4>
+  <ul>
+    <li *ngFor="let owner of owners">
+      {{ owner.displayName }}
+      <button *ngIf="isOwner && owner.uid !== currentUserUid" (click)="removeOwner(owner)">削除</button>
+    </li>
+  </ul>
+
+  <h4>メンバー</h4>
+  <ul>
+    <li *ngFor="let member of members">
+      {{ member.displayName }}
+      <button (click)="removeMember(member)">削除</button>
+    </li>
+  </ul>
+
+  <h4>メンバー追加</h4>
+  <app-user-search (userSelected)="addMembers($event)"></app-user-search>
+
+  <h4>オーナー追加</h4>
+  <app-user-search (userSelected)="addOwners($event)"></app-user-search>
+</div>
