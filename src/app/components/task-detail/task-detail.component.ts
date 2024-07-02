@@ -92,6 +92,8 @@ export class TaskDetailComponent implements OnInit {
 
   async saveTask() {
     console.log('saveTask called');
+    console.log('Task before save:', this.task);
+    
     if (this.task.reminderTime && this.task.reminderTime.value !== null) {
       const timeBeforeStart = this.calculateReminderTime({
         value: this.task.reminderTime.value,
@@ -101,7 +103,7 @@ export class TaskDetailComponent implements OnInit {
     }
   
     try {
-      console.log('Task before save:', this.task);
+      console.log('Task before update/add:', this.task);
       if (this.task.id) {
         await this.taskService.updateTask(this.task); // 既存のタスクを更新
         console.log('Task updated:', this.task);
@@ -115,9 +117,6 @@ export class TaskDetailComponent implements OnInit {
       console.error('Error updating task:', error);
     }
   }
-  
-  
-  
 
   async duplicateTask() {
     console.log('duplicateTask called');
@@ -171,18 +170,26 @@ export class TaskDetailComponent implements OnInit {
 
   addExcludeDate() {
     console.log('addExcludeDate called');
+    if (!this.task.repeatSettings) {
+      this.task.repeatSettings = { frequency: 'none', businessDaysOnly: false, excludeDates: [] };
+    }
+    if (!this.task.repeatSettings.excludeDates) {
+      this.task.repeatSettings.excludeDates = [];
+    }
     if (this.excludeDate) {
-      this.task.repeatSettings?.excludeDates?.push(this.excludeDate);
+      this.task.repeatSettings.excludeDates.push(this.excludeDate);
+      console.log('Exclude date before reset:', this.excludeDate);
+      console.log('Updated exclude dates:', this.task.repeatSettings.excludeDates);
       this.excludeDate = '';
-      console.log('Exclude date added:', this.excludeDate);
     }
   }
 
   removeExcludeDate(date: string) {
     console.log('removeExcludeDate called');
-    if (this.task.repeatSettings?.excludeDates) {
+    if (this.task.repeatSettings && this.task.repeatSettings.excludeDates) {
       this.task.repeatSettings.excludeDates = this.task.repeatSettings.excludeDates.filter(d => d !== date);
       console.log('Exclude date removed:', date);
+      console.log('Updated exclude dates:', this.task.repeatSettings.excludeDates);
     }
   }
 

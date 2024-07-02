@@ -80,7 +80,7 @@ export class ProjectListComponent implements OnInit {
             this.tasks.push(task);
           }
         });
-        console.log(`Tasks for project ${projectId} loaded:`, this.tasks);
+        
       });
     });
   }

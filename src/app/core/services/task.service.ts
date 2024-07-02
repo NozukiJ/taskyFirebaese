@@ -1,4 +1,3 @@
-// src\app\core\services\task.service.ts
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Task } from '../models/task.model';
@@ -103,12 +102,14 @@ export class TaskService {
     const userId = this.getCurrentUserId();
     if (userId) {
       console.log('Updating task for user:', userId, task);
+      console.log('Exclude dates before update:', task.repeatSettings?.excludeDates);
       return this.firestore
         .collection(`users/${task.userId}/tasks`)
         .doc(task.id)
         .set(task, { merge: true }) // merge オプションを追加
         .then(() => {
           console.log('Task successfully updated in Firestore:', task);
+          console.log('Exclude dates after update:', task.repeatSettings?.excludeDates);
           this.taskUpdatedSource.next();
         })
         .catch(error => {
@@ -121,9 +122,6 @@ export class TaskService {
       return Promise.reject(error);
     }
   }
-  
-  
-  
 
   duplicateTask(task: Task): Promise<void> {
     const userId = this.getCurrentUserId();
