@@ -26,7 +26,7 @@ export class ProjectListComponent implements OnInit {
   tasks: Task[] = [];
   membersMap: { [key: string]: User } = {};
   ownersMap: { [key: string]: User } = {};
-  currentUserUid: string | undefined; // 現在のユーザーIDを保持
+  currentUserUid: string | null = null; // 現在のユーザーIDを保持
 
   constructor(
     private taskService: TaskService,
@@ -37,10 +37,9 @@ export class ProjectListComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.loadProjects();
-    this.loadTasks();
     this.authService.user$.subscribe(user => {
-      this.currentUserUid = user?.uid;
+      this.currentUserUid = user?.uid || null;
+      this.loadProjects(); // ユーザーIDを取得後にプロジェクトをロード
     });
   }
 
@@ -50,14 +49,36 @@ export class ProjectListComponent implements OnInit {
       this.projects = projects;
       console.log('Projects loaded:', this.projects);
       this.loadUsers();
+      this.loadTasksForProjects();
     });
   }
 
-  loadTasks() {
-    console.log('Loading tasks...');
-    this.taskService.getTasks().subscribe((tasks: Task[]) => {
-      this.tasks = tasks;
-      console.log('Tasks loaded:', this.tasks);
+  loadTasksForProjects() {
+    console.log('Loading tasks for each project...');
+    this.tasks = []; // タスクをリセット
+    if (this.currentUserUid) {
+      this.projects.forEach(project => {
+        if (project.members.includes(this.currentUserUid!) || project.owners.includes(this.currentUserUid!)) {
+          console.log(`User is a member or owner of project: ${project.id}`);
+          this.loadTasksForUsersInProject(project.id, project.members.concat(project.owners));
+        }
+      });
+    }
+  }
+
+  loadTasksForUsersInProject(projectId: string, userIds: string[]) {
+    const uniqueTaskIds = new Set<string>();
+
+    userIds.forEach(userId => {
+      this.taskService.getTasksByUserId(userId).subscribe(tasks => {
+        tasks.forEach(task => {
+          if (task.projectId === projectId && !uniqueTaskIds.has(task.id)) {
+            uniqueTaskIds.add(task.id);
+            this.tasks.push(task);
+          }
+        });
+        console.log(`Tasks for project ${projectId} loaded:`, this.tasks);
+      });
     });
   }
 
@@ -113,7 +134,7 @@ export class ProjectListComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         console.log('Add Task Dialog closed with result:', result);
-        this.loadTasks();
+        this.loadTasksForProjects();
       }
     });
   }
@@ -138,7 +159,7 @@ export class ProjectListComponent implements OnInit {
     selectedTasks.forEach(task => {
       this.taskService.deleteTask(task).then(() => {
         console.log('Deleted task:', task);
-        this.loadTasks();
+        this.loadTasksForProjects();
       });
     });
   }
@@ -151,7 +172,7 @@ export class ProjectListComponent implements OnInit {
       relatedTasks.forEach(task => {
         this.taskService.deleteTask(task).then(() => {
           console.log('Deleted related task:', task);
-          this.loadTasks();
+          this.loadTasksForProjects();
         });
       });
       this.projectService.deleteProject(project).then(() => {
@@ -186,8 +207,7 @@ export class ProjectListComponent implements OnInit {
   }
 
   getTasksForProject(projectId: string): Task[] {
-    const tasksForProject = this.tasks.filter(task => task.projectId === projectId);
-    return tasksForProject;
+    return this.tasks.filter(task => task.projectId === projectId);
   }
 
   openTaskDetailDialog(task: Task) {
@@ -202,7 +222,7 @@ export class ProjectListComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         console.log('Task Detail Dialog closed with result:', result);
-        this.loadTasks();
+        this.loadTasksForProjects();
       }
     });
   }

@@ -1,7 +1,24 @@
 service cloud.firestore {
   match /databases/{database}/documents {
+    // ユーザー自身のタスクに対するアクセスを許可
+    match /users/{userId}/tasks/{taskId} {
+      allow read, write: if request.auth.uid == userId;
+    }
+
+    // プロジェクトに対するアクセスを許可
+    match /projects/{projectId} {
+      allow read, write: if request.auth != null;
+    }
+
+    // プロジェクト内のタスクに対するアクセスを許可
+    match /projects/{projectId}/tasks/{taskId} {
+      allow read, write: if request.auth != null;
+    }
+
+    // コレクショングループクエリを許可
     match /{document=**} {
-      allow read, write: if true;
+      allow read: if request.auth != null;
     }
   }
 }
+
