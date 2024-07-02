@@ -22,29 +22,25 @@ export class ProjectService {
   }
 
   addProject(project: Project): Promise<void> {
-    const id = this.firestore.createId();
-    console.log(`Adding new project with ID: ${id}`, project);
-    return this.firestore.collection('projects').doc(id).set({ ...project, id })
-      .then(() => console.log(`Project added successfully with ID: ${id}`))
+    return this.firestore.collection('projects').doc(project.id).set(project)
+      .then(() => {
+        console.log(`Project with ID: ${project.id} successfully added.`);
+      })
       .catch(error => {
-        console.error(`Error adding project with ID: ${id}`, error);
-        throw error;
+        console.error(`Error adding project with ID: ${project.id}`, error);
+        throw error; // エラーを再度投げて、呼び出し元でもハンドリングできるようにする
       });
   }
 
-  updateProject(updatedProject: Project): Promise<void> {
-    if (updatedProject.id) {
-      console.log(`Updating project with ID: ${updatedProject.id}`, updatedProject);
-      return this.firestore.collection('projects').doc(updatedProject.id).set(updatedProject)
-        .then(() => console.log(`Project updated successfully with ID: ${updatedProject.id}`))
-        .catch(error => {
-          console.error(`Error updating project with ID: ${updatedProject.id}`, error);
-          throw error;
-        });
-    } else {
-      console.error('Project ID is missing, cannot update project', updatedProject);
-      return Promise.reject('Project ID is missing');
-    }
+  updateProject(project: Project): Promise<void> {
+    return this.firestore.collection('projects').doc(project.id).update(project)
+      .then(() => {
+        console.log(`Project with ID: ${project.id} successfully updated.`);
+      })
+      .catch(error => {
+        console.error(`Error updating project with ID: ${project.id}`, error);
+        throw error; // エラーを再度投げて、呼び出し元でもハンドリングできるようにする
+      });
   }
 
   deleteProject(project: Project): Promise<void> {

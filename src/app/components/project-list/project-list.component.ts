@@ -63,6 +63,9 @@ export class ProjectListComponent implements OnInit {
           this.loadTasksForUsersInProject(project.id, project.members.concat(project.owners));
         }
       });
+
+      // プロジェクト無所属のタスクをロード
+      this.loadUnassignedTasks();
     }
   }
 
@@ -79,6 +82,21 @@ export class ProjectListComponent implements OnInit {
         });
         console.log(`Tasks for project ${projectId} loaded:`, this.tasks);
       });
+    });
+  }
+
+  loadUnassignedTasks() {
+    console.log('Loading unassigned tasks...');
+    const uniqueTaskIds = new Set<string>();
+
+    this.taskService.getTasksByUserId(this.currentUserUid!).subscribe(tasks => {
+      tasks.forEach(task => {
+        if (!task.projectId && !uniqueTaskIds.has(task.id)) {
+          uniqueTaskIds.add(task.id);
+          this.tasks.push(task);
+        }
+      });
+      console.log('Unassigned tasks loaded:', this.tasks);
     });
   }
 

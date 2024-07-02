@@ -1,3 +1,4 @@
+// src\app\core\services\task.service.ts
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Task } from '../models/task.model';
@@ -101,14 +102,28 @@ export class TaskService {
   updateTask(task: Task): Promise<void> {
     const userId = this.getCurrentUserId();
     if (userId) {
-      const updatedTask = { ...task, userId: userId };
-      return this.firestore.collection(`users/${userId}/tasks`).doc(task.id).set(updatedTask).then(() => {
-        this.taskUpdatedSource.next();
-      });
+      console.log('Updating task for user:', userId, task);
+      return this.firestore
+        .collection(`users/${task.userId}/tasks`)
+        .doc(task.id)
+        .set(task, { merge: true }) // merge オプションを追加
+        .then(() => {
+          console.log('Task successfully updated in Firestore:', task);
+          this.taskUpdatedSource.next();
+        })
+        .catch(error => {
+          console.error('Error updating task in Firestore:', error);
+          throw error;
+        });
     } else {
-      return Promise.reject('User not authenticated');
+      const error = 'User not authenticated';
+      console.error(error);
+      return Promise.reject(error);
     }
   }
+  
+  
+  
 
   duplicateTask(task: Task): Promise<void> {
     const userId = this.getCurrentUserId();
@@ -160,7 +175,7 @@ export class TaskService {
       const holidays = await this.holidayService.getHolidays();
       const tasksSnapshot = await this.firestore.collection<Task>('tasks').get().toPromise();
 
-      if (tasksSnapshot) {
+      if (tasksSnapshot && !tasksSnapshot.empty) {
         tasksSnapshot.forEach(taskDoc => {
           const task = taskDoc.data() as Task;
           if (task.repeatSettings) {

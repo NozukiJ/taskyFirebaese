@@ -37,7 +37,7 @@ button:hover {
 }
 
 .project-detail-container {
-  padding: 20px;
+  padding: 10px;
   background-color: #f9f9f9;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -45,6 +45,43 @@ button:hover {
   box-sizing: border-box;
   max-width: 1000px;
   margin: 0 auto;
-  max-height: 80vh; /* 画面に収まるように最大高さを設定 */
-  overflow-y: auto; /* 垂直方向にスクロール可能にする */
+  max-height: 80vh;
+  overflow-y: auto;
+  font-size: 14px;
+}
+
+h3, h4 {
+  margin: 10px 0;
+}
+
+ul {
+  padding-left: 20px;
+  margin: 5px 0;
+}
+
+ul li {
+  margin-bottom: 5px;
+}
+
+p {
+  margin: 10px 0;
+}
+
+.search-container {
+  display: flex;
+  gap: 5px;
+  margin: 10px 0;
+}
+
+.search-container input {
+  flex: 1;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.add-buttons {
+  display: flex;
+  gap: 10px;
+  margin: 10px 0;
 }

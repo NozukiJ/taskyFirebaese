@@ -1,3 +1,4 @@
+// src\app\components\project-detail\project-detail.component.ts
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
@@ -77,11 +78,17 @@ export class ProjectDetailComponent implements OnInit {
     });
   }
 
-  updateProject() {
-    this.projectService.updateProject(this.projectCopy).then(() => {
+  async updateProject() {
+    try {
+      await this.projectService.updateProject(this.projectCopy);
       this.dialogRef.close(this.projectCopy);
-    });
+    } catch (error: any) {
+      console.error('Error saving project:', error);
+      alert(`プロジェクトの保存に失敗しました: ${error.message}`);
+    }
   }
+  
+
 
   addMembers(users: User[]) {
     const existingMembers = users.filter(user => this.projectCopy.members.includes(user.uid));

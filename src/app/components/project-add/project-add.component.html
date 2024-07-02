@@ -1,6 +1,10 @@
 <div class="project-detail-container">
   <h2>プロジェクトを追加</h2>
   <div>
+    <button (click)="saveProject()">保存</button>
+    <button (click)="cancel()">キャンセル</button>
+  </div>
+  <div>
     <label>名前:
       <input [(ngModel)]="newProject.name" placeholder="名前">
     </label>
@@ -47,8 +51,4 @@
   <app-user-search (userSelected)="addMembers($event)"></app-user-search>
   <h4>オーナー追加</h4>
   <app-user-search (userSelected)="addOwners($event)"></app-user-search>
-  <div>
-    <button (click)="saveProject()">保存</button>
-    <button (click)="cancel()">キャンセル</button>
-  </div>
 </div>

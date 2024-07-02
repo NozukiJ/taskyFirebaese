@@ -99,18 +99,25 @@ export class TaskDetailComponent implements OnInit {
       });
       this.reminderService.setReminder(this.task, timeBeforeStart);
     }
-
-    if (this.task.id) {
-      await this.taskService.updateTask(this.task); // 既存のタスクを更新
-      console.log('Task updated:', this.task);
-    } else {
-      await this.taskService.addTask(this.task); // 新しいタスクを追加
-      console.log('New task added:', this.task);
+  
+    try {
+      console.log('Task before save:', this.task);
+      if (this.task.id) {
+        await this.taskService.updateTask(this.task); // 既存のタスクを更新
+        console.log('Task updated:', this.task);
+      } else {
+        await this.taskService.addTask(this.task); // 新しいタスクを追加
+        console.log('New task added:', this.task);
+      }
+      this.dialogRef.close(this.task);  // ダイアログを閉じてタスクを返す
+      console.log('Dialog closed with task:', this.task);
+    } catch (error) {
+      console.error('Error updating task:', error);
     }
-
-    this.dialogRef.close(this.task);  // ダイアログを閉じてタスクを返す
-    console.log('Dialog closed with task:', this.task);
   }
+  
+  
+  
 
   async duplicateTask() {
     console.log('duplicateTask called');
