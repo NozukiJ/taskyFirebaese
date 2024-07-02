@@ -11,19 +11,17 @@
         <div class="project-header">
           <input type="checkbox" [(ngModel)]="project.selected" class="project-checkbox" [disabled]="!canEdit(project)">
           <h3 (click)="openProjectDetailDialog(project)">{{ project.name }}</h3>
+          <span class="project-owners">オーナー: 
+            <span *ngFor="let ownerId of project.owners">
+              {{ ownersMap[ownerId]?.displayName || 'Unknown Owner' }}
+            </span>
+          </span>
+          <span class="project-members">メンバー: 
+            <span *ngFor="let memberId of project.members">
+              {{ membersMap[memberId]?.displayName || 'Unknown Member' }}
+            </span>
+          </span>
         </div>
-        <p>オーナー:</p>
-        <ul>
-          <li *ngFor="let ownerId of project.owners">
-            {{ ownersMap[ownerId]?.displayName || 'Unknown Owner' }}
-          </li>
-        </ul>
-        <p>メンバー:</p>
-        <ul>
-          <li *ngFor="let memberId of project.members">
-            {{ membersMap[memberId]?.displayName || 'Unknown Member' }}
-          </li>
-        </ul>
         <ul class="task-list">
           <li class="task-header">
             <div class="task-header-content">

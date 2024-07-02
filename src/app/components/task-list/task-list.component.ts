@@ -1,4 +1,3 @@
-// src\app\components\task-list\task-list.component.ts
 import { Component, OnInit, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -193,18 +192,19 @@ export class TaskListComponent implements OnInit {
     });
   }
 
-  openSubtaskDetailDialog(subtask: Subtask) {
+  openSubtaskDetailDialog(subtask: Subtask, task: Task) {
     // 既存のダイアログを全て閉じる
     this.dialog.closeAll();
 
     // 新しいサブタスク詳細ダイアログを開く
     const dialogRef = this.dialog.open(SubtaskDetailComponent, {
       width: '400px',
-      data: { subtask }
+      data: { subtask, task }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
+        this.tasks = this.tasks.map(t => t.id === task.id ? task : t);
         this.saveTasks();
       }
     });

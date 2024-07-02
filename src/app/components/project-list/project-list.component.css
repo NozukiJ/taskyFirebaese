@@ -1,4 +1,3 @@
-/* src\app\components\project-list\project-list.component.css */
 .task-list-container {
   padding: 20px;
   background-color: #f9f9f9;
@@ -76,10 +75,29 @@
 .project-header {
   display: flex;
   align-items: center;
+  gap: 10px;
 }
 
 .project-checkbox {
   margin-right: 10px;
+}
+
+.project-owners,
+.project-members {
+  margin-left: auto;
+  font-size: 0.9em;
+  color: #555;
+}
+
+.project-owners span,
+.project-members span {
+  display: inline-block;
+  margin-right: 5px;
+  padding: 5px 10px;
+  background-color: #f0f0f0;
+  border-radius: 10px;
+  font-size: 0.9em;
+  color: #555;
 }
 
 .task-list {

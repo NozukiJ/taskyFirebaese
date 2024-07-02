@@ -37,20 +37,10 @@ export class TaskDetailComponent implements OnInit {
       this.task = { ...data.task };  // データのコピーを作成
       this.originalTask = { ...data.task };  // 元のデータを保持
       console.log('TaskDetailComponent received task data:', this.task);
-    }
-  }
-
-  ngOnInit(): void {
-    console.log('TaskDetailComponent ngOnInit called');
-    this.projects$ = this.projectService.getProjects();
-    this.projects$.subscribe(projects => {
-      this.projects = projects;
-      console.log('Projects loaded:', this.projects);
-    });
-
-    if (!this.task) {
+    } else {
+      // タスクが提供されなかった場合に初期化
       this.task = {
-        id: '',
+        id: this.generateId(), // IDを生成
         title: '',
         description: '',
         completed: false,
@@ -64,7 +54,7 @@ export class TaskDetailComponent implements OnInit {
         status: '未着手',
         projectId: '',
         repeatSettings: {
-          frequency: 'none', // デフォルトを 'none' に設定
+          frequency: 'none',
           businessDaysOnly: false,
           excludeDates: []
         },
@@ -72,22 +62,32 @@ export class TaskDetailComponent implements OnInit {
           value: null,
           unit: '分'
         },
-        userId: '' // 追加
+        userId: ''
       };
-      const userId = this.taskService.getCurrentUserId();
-      if (userId) {
-        this.task.userId = userId;
-      }
-      console.log('Initialized empty task');
-    } else {
-      if (!this.task.reminderTime) {
-        this.task.reminderTime = {
-          value: null,
-          unit: '分'
-        };
-      }
-      console.log('Loaded existing task:', this.task);
+      console.log('Task initialized to default:', this.task);
     }
+  }
+
+  ngOnInit(): void {
+    console.log('TaskDetailComponent ngOnInit called');
+    this.projects$ = this.projectService.getProjects();
+    this.projects$.subscribe(projects => {
+      this.projects = projects;
+      console.log('Projects loaded:', this.projects);
+    });
+
+    if (!this.task.reminderTime) {
+      this.task.reminderTime = {
+        value: null,
+        unit: '分'
+      };
+    }
+
+    if (!this.task.subtasks) {
+      this.task.subtasks = [];
+    }
+
+    console.log('Loaded existing task:', this.task);
   }
 
   async saveTask() {
@@ -99,7 +99,7 @@ export class TaskDetailComponent implements OnInit {
       });
       this.reminderService.setReminder(this.task, timeBeforeStart);
     }
-  
+
     if (this.task.id) {
       await this.taskService.updateTask(this.task); // 既存のタスクを更新
       console.log('Task updated:', this.task);
@@ -107,11 +107,11 @@ export class TaskDetailComponent implements OnInit {
       await this.taskService.addTask(this.task); // 新しいタスクを追加
       console.log('New task added:', this.task);
     }
-  
+
     this.dialogRef.close(this.task);  // ダイアログを閉じてタスクを返す
     console.log('Dialog closed with task:', this.task);
   }
-  
+
   async duplicateTask() {
     console.log('duplicateTask called');
     await this.taskService.duplicateTask(this.task); // Firestoreに複製

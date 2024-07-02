@@ -4,7 +4,7 @@ import { Task } from '../models/task.model';
 import { HolidayService } from './holiday.service';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { TaskDetailComponent } from '../../components/task-detail/task-detail.component';
-import { Observable, of } from 'rxjs';
+import { Observable, of, BehaviorSubject } from 'rxjs';
 import { endOfMonth, subDays } from 'date-fns';
 import { AuthService } from './auth.service';
 import { switchMap, map } from 'rxjs/operators';
@@ -14,6 +14,8 @@ import { switchMap, map } from 'rxjs/operators';
 })
 export class TaskService {
   private currentDialogRefs: { [taskId: string]: MatDialogRef<TaskDetailComponent> } = {};
+  private taskUpdatedSource = new BehaviorSubject<void>(null as unknown as void);
+  taskUpdated$ = this.taskUpdatedSource.asObservable();
 
   constructor(
     private firestore: AngularFirestore,
@@ -70,7 +72,6 @@ export class TaskService {
     return this.firestore.collection<Task>(`users/${userId}/tasks`).valueChanges();
   }
 
-  // 新しいメソッドを追加
   getTasks(): Observable<Task[]> {
     const userId = this.getCurrentUserId();
     if (userId) {
@@ -89,7 +90,9 @@ export class TaskService {
         id: id,
         userId: userId
       };
-      return this.firestore.collection(`users/${userId}/tasks`).doc(id).set(taskWithId);
+      return this.firestore.collection(`users/${userId}/tasks`).doc(id).set(taskWithId).then(() => {
+        this.taskUpdatedSource.next();
+      });
     } else {
       return Promise.reject('User not authenticated');
     }
@@ -99,7 +102,9 @@ export class TaskService {
     const userId = this.getCurrentUserId();
     if (userId) {
       const updatedTask = { ...task, userId: userId };
-      return this.firestore.collection(`users/${userId}/tasks`).doc(task.id).set(updatedTask);
+      return this.firestore.collection(`users/${userId}/tasks`).doc(task.id).set(updatedTask).then(() => {
+        this.taskUpdatedSource.next();
+      });
     } else {
       return Promise.reject('User not authenticated');
     }
@@ -110,7 +115,9 @@ export class TaskService {
     if (userId) {
       const newTaskId = this.generateId();
       const newTask = { ...task, id: newTaskId, userId: userId };
-      return this.firestore.collection(`users/${userId}/tasks`).doc(newTaskId).set(newTask);
+      return this.firestore.collection(`users/${userId}/tasks`).doc(newTaskId).set(newTask).then(() => {
+        this.taskUpdatedSource.next();
+      });
     } else {
       return Promise.reject('User not authenticated');
     }
@@ -119,7 +126,9 @@ export class TaskService {
   deleteTask(task: Task): Promise<void> {
     const userId = this.getCurrentUserId();
     if (userId) {
-      return this.firestore.collection(`users/${userId}/tasks`).doc(task.id).delete();
+      return this.firestore.collection(`users/${userId}/tasks`).doc(task.id).delete().then(() => {
+        this.taskUpdatedSource.next();
+      });
     } else {
       return Promise.reject('User not authenticated');
     }
@@ -199,7 +208,9 @@ export class TaskService {
   private createTaskInstance(task: Task, date: string) {
     const newTaskId = this.generateId();
     const newTask = { ...task, id: newTaskId, startDateTime: date };
-    this.firestore.collection(`users/${task.userId}/tasks`).doc(newTaskId).set(newTask);
+    this.firestore.collection(`users/${task.userId}/tasks`).doc(newTaskId).set(newTask).then(() => {
+      this.taskUpdatedSource.next();
+    });
   }
 
   private generateId(): string {

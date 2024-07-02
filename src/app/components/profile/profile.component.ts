@@ -38,7 +38,13 @@ export class ProfileComponent implements OnInit {
   }
 
   updateProfile() {
-    this.authService.updateProfile(this.profile.displayName, this.profile.bio, this.profile.company, this.profile.position, this.profile.team)
+    this.authService.updateProfile(
+      this.profile.displayName,
+      this.profile.bio,
+      this.profile.company,
+      this.profile.position,
+      this.profile.team
+    )
       .then(() => {
         this.message = 'プロフィールの更新が成功しました';
       })
@@ -47,4 +53,5 @@ export class ProfileComponent implements OnInit {
         this.message = 'プロフィールの更新に失敗しました';
       });
   }
+  
 }
