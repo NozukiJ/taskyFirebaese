@@ -2,11 +2,11 @@
 export const environment = {
     production: true,
     firebaseConfig: {
-        apiKey: "AIzaSyBLib--Lb3kRU1UORbEgx76QxXWLr8rFZk",
-        authDomain: "nozuki3rd.firebaseapp.com",
-        projectId: "nozuki3rd",
-        storageBucket: "nozuki3rd.appspot.com",
-        messagingSenderId: "183357457685",
-        appId: "1:183357457685:web:01b4a530cc30b2b310d51c"
-    }
+        apiKey: "AIzaSyC2SirJzRxzgCCNORdcIKKl1EfF4VBAJV0",
+        authDomain: "tasky3-3429c.firebaseapp.com",
+        projectId: "tasky3-3429c",
+        storageBucket: "tasky3-3429c.appspot.com",
+        messagingSenderId: "831188698122",
+        appId: "1:831188698122:web:7b786e1afaa16ff6754bf3"
+     }
 };
