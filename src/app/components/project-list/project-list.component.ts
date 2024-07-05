@@ -80,6 +80,10 @@ export class ProjectListComponent implements OnInit {
             this.tasks.push(task);
           }
         });
+<<<<<<< HEAD
+=======
+        
+>>>>>>> 2e967c177489ee8caff557b594694b0dcc04e1b1
       });
     });
   }
