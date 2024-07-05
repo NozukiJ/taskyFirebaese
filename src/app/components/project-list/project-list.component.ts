@@ -83,7 +83,11 @@ export class ProjectListComponent implements OnInit {
 <<<<<<< HEAD
 =======
         
+<<<<<<< HEAD
 >>>>>>> 2e967c177489ee8caff557b594694b0dcc04e1b1
+=======
+>>>>>>> origin/master
+>>>>>>> 5cd2683f4fe570fcdc368207707c5183cbdb4f4c
       });
     });
   }

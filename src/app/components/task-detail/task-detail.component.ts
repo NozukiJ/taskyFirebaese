@@ -104,7 +104,11 @@ export class TaskDetailComponent implements OnInit {
     console.log('Task before save:', this.task);
     
     if (this.task.reminderTime && this.task.reminderTime.value !== null) {
+<<<<<<< HEAD
 >>>>>>> 2e967c177489ee8caff557b594694b0dcc04e1b1
+=======
+>>>>>>> origin/master
+>>>>>>> 5cd2683f4fe570fcdc368207707c5183cbdb4f4c
       const timeBeforeStart = this.calculateReminderTime({
         value: this.editedTask.reminderTime.value,
         unit: this.editedTask.reminderTime.unit
@@ -123,7 +127,11 @@ export class TaskDetailComponent implements OnInit {
       if (this.task.id) {
         await this.taskService.updateTask(this.task); // 既存のタスクを更新
         console.log('Task updated:', this.task);
+<<<<<<< HEAD
 >>>>>>> 2e967c177489ee8caff557b594694b0dcc04e1b1
+=======
+>>>>>>> origin/master
+>>>>>>> 5cd2683f4fe570fcdc368207707c5183cbdb4f4c
       } else {
         await this.taskService.addTask(this.editedTask); // 新しいタスクを追加
         console.log('New task added:', this.editedTask);
@@ -207,7 +215,11 @@ export class TaskDetailComponent implements OnInit {
       this.task.repeatSettings.excludeDates.push(this.excludeDate);
       console.log('Exclude date before reset:', this.excludeDate);
       console.log('Updated exclude dates:', this.task.repeatSettings.excludeDates);
+<<<<<<< HEAD
 >>>>>>> 2e967c177489ee8caff557b594694b0dcc04e1b1
+=======
+>>>>>>> origin/master
+>>>>>>> 5cd2683f4fe570fcdc368207707c5183cbdb4f4c
       this.excludeDate = '';
     }
   }
@@ -224,7 +236,11 @@ export class TaskDetailComponent implements OnInit {
       this.task.repeatSettings.excludeDates = this.task.repeatSettings.excludeDates.filter(d => d !== date);
       console.log('Exclude date removed:', date);
       console.log('Updated exclude dates:', this.task.repeatSettings.excludeDates);
+<<<<<<< HEAD
 >>>>>>> 2e967c177489ee8caff557b594694b0dcc04e1b1
+=======
+>>>>>>> origin/master
+>>>>>>> 5cd2683f4fe570fcdc368207707c5183cbdb4f4c
     }
   }
 
