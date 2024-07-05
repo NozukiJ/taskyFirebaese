@@ -1,0 +1,8 @@
+<h2>プロジェクトの進捗</h2>
+<div *ngFor="let project of projects; let i = index">
+  <h3>{{ project.name }}</h3>
+  <canvas #chartContainer width="800" height="400" style="width: 100%; height: 400px;"></canvas>
+</div>
+<div *ngIf="!hasChartData">
+  チャートデータがありません
+</div>

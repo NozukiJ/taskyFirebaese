@@ -65,8 +65,13 @@ export class TaskListComponent implements OnInit {
        this.selectedStatus === task.status) &&
       (task.title.toLowerCase().includes(searchTextLower) ||
        task.tag.toLowerCase().includes(searchTextLower) ||
-       task.description.toLowerCase().includes(searchTextLower)) &&
-      (this.selectedTag === '' || task.tag === this.selectedTag) &&
+       task.description.toLowerCase().includes(searchTextLower) ||
+       task.subtasks.some(subtask => 
+         subtask.title.toLowerCase().includes(searchTextLower) ||
+         subtask.tag.toLowerCase().includes(searchTextLower) ||
+         subtask.description.toLowerCase().includes(searchTextLower)
+       )) &&
+      (this.selectedTag === '' || task.tag === this.selectedTag || task.subtasks.some(subtask => subtask.tag === this.selectedTag)) &&
       (this.selectedPriority === '' || task.priority === this.selectedPriority)
     ).sort((a, b) => this.compareTasks(a, b));
   }
@@ -81,22 +86,34 @@ export class TaskListComponent implements OnInit {
   compareTasks(a: Task, b: Task): number {
     const priorityOrder: { [key: string]: number } = { 'high': 1, 'medium': 2, 'low': 3, '': 4 };
 
-    switch (this.sortOrder) {
-      case 'startDateAsc':
-        return new Date(a.startDateTime).getTime() - new Date(b.startDateTime).getTime();
-      case 'startDateDesc':
-        return new Date(b.startDateTime).getTime() - new Date(a.startDateTime).getTime();
-      case 'endDateAsc':
-        return new Date(a.endDateTime).getTime() - new Date(b.endDateTime).getTime();
-      case 'endDateDesc':
-        return new Date(b.endDateTime).getTime() - new Date(a.endDateTime).getTime();
-      case 'priority':
+    const getDate = (task: Task, order: string) => {
+      switch (order) {
+        case 'startDateAsc':
+        case 'startDateDesc':
+          return task.startDateTime ? new Date(task.startDateTime).getTime() : null;
+        case 'endDateAsc':
+        case 'endDateDesc':
+          return task.endDateTime ? new Date(task.endDateTime).getTime() : null;
+        default:
+          return null;
+      }
+    };
+
+    const dateA = getDate(a, this.sortOrder);
+    const dateB = getDate(b, this.sortOrder);
+
+    if (dateA !== null && dateB !== null) {
+      return dateA - dateB;
+    } else if (dateA === null && dateB === null) {
+      if (this.sortOrder === 'priority') {
         if (a.priority !== b.priority) {
           return priorityOrder[a.priority] - priorityOrder[b.priority];
         }
-        return new Date(a.endDateTime).getTime() - new Date(b.endDateTime).getTime();
-      default:
         return 0;
+      }
+      return 0;
+    } else {
+      return dateA === null ? 1 : -1;
     }
   }
 
@@ -106,8 +123,14 @@ export class TaskListComponent implements OnInit {
   }
 
   getTags() {
-    const tags = this.tasks.map(task => task.tag);
-    return Array.from(new Set(tags)).filter(tag => tag !== '');
+    const tags = new Set<string>();
+    this.tasks.forEach(task => {
+      if (task.tag) tags.add(task.tag);
+      task.subtasks.forEach(subtask => {
+        if (subtask.tag) tags.add(subtask.tag);
+      });
+    });
+    return Array.from(tags);
   }
 
   deleteSelectedTasks() {
@@ -151,6 +174,7 @@ export class TaskListComponent implements OnInit {
         this.tasks$?.subscribe(tasks => {
           if (tasks) { // tasks が null でないことを確認
             this.tasks = tasks;
+            this.tags = this.getTags();
           }
         });
       }
