@@ -1,15 +1,16 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Project } from '../models/project.model';
-import { Observable } from 'rxjs';
+import { Observable, combineLatest, of } from 'rxjs';
+import { AuthService } from './auth.service';
+import { map, switchMap } from 'rxjs/operators';
 import firebase from 'firebase/compat/app';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProjectService {
-
-  constructor(private firestore: AngularFirestore) {}
+  constructor(private firestore: AngularFirestore, private authService: AuthService) {}
 
   getProjects(): Observable<Project[]> {
     console.log('Fetching all projects from Firestore...');
@@ -124,5 +125,25 @@ export class ProjectService {
       console.error('User ID is undefined, cannot remove owner from project', projectId);
       return Promise.reject('User ID is undefined');
     }
+  }
+
+  getProjectsByOwnerOrMember(): Observable<Project[]> {
+    return this.authService.user$.pipe(
+      switchMap(user => {
+        if (!user) {
+          return of([]);
+        }
+        const ownerProjects$ = this.firestore.collection<Project>('projects', ref => ref.where('owners', 'array-contains', user.uid)).valueChanges({ idField: 'id' });
+        const memberProjects$ = this.firestore.collection<Project>('projects', ref => ref.where('members', 'array-contains', user.uid)).valueChanges({ idField: 'id' });
+
+        return combineLatest([ownerProjects$, memberProjects$]).pipe(
+          map(([ownerProjects, memberProjects]) => {
+            const combinedProjects = [...ownerProjects, ...memberProjects];
+            const uniqueProjects = Array.from(new Set(combinedProjects.map(p => p.id))).map(id => combinedProjects.find(p => p.id === id)!);
+            return uniqueProjects;
+          })
+        );
+      })
+    );
   }
 }

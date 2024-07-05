@@ -2,12 +2,12 @@ import { Component } from '@angular/core';
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from './core/services/auth.service';
-import { RouterModule } from '@angular/router'; // RouterModule をインポート
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, RouterModule], // RouterModule を追加
+  imports: [RouterOutlet, CommonModule, RouterModule],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
@@ -41,8 +41,10 @@ export class AppComponent {
         return '/tasks';
       case 'プロフィール':
         return '/profile';
-      case 'ユーザー検索': // 新しいパスを追加
+      case 'ユーザー検索':
         return '/user-search';
+      case 'プロジェクト進捗':
+        return '/project-progress/プロジェクトIDを入力'; // 新しいパスを追加
       default:
         return '/';
     }

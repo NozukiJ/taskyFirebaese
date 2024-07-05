@@ -1,4 +1,3 @@
-// src\app\app-routing.module.ts
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CalendarComponent } from './components/calendar/calendar.component';
@@ -10,10 +9,11 @@ import { RegisterComponent } from './components/register/register.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { ProjectDetailComponent } from './components/project-detail/project-detail.component';
-import { UserSearchComponent } from './components/user-search/user-search.component'; // 新しいコンポーネントをインポート
+import { UserSearchComponent } from './components/user-search/user-search.component';
 import { AuthGuard } from './core/guards/auth.guard';
+import { ProjectProgressComponent } from './components/project-progress/project-progress.component';
 
-const routes: Routes = [
+export const routes: Routes = [
   { path: '', redirectTo: '/calendar', pathMatch: 'full' },
   { path: 'calendar', component: CalendarComponent, canActivate: [AuthGuard] },
   { path: 'projects', component: ProjectListComponent, canActivate: [AuthGuard] },
@@ -24,7 +24,8 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'reset-password', component: ResetPasswordComponent },
   { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
-  { path: 'user-search', component: UserSearchComponent, canActivate: [AuthGuard] } // 新しいルートを追加
+  { path: 'user-search', component: UserSearchComponent, canActivate: [AuthGuard] },
+  { path: 'project-progress', component: ProjectProgressComponent, canActivate: [AuthGuard] }
 ];
 
 @NgModule({
@@ -32,5 +33,3 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
-
-export { routes };

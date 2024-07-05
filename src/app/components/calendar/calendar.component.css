@@ -1,22 +1,23 @@
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
+  max-width: 100%;
+  margin: 0;
   padding: 20px;
   background-color: #fff;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  overflow-y: auto; /* 縦方向のスクロールバーを有効にする */
-  height: calc(100vh - 40px); /* 画面全体の高さから適切な余白を引いた高さ */
+  height: 98%;
+  width: 95%; 
 }
 
 .button-container {
   display: flex;
-  justify-content: space-between;
+  gap: 10px; /* ボタン間のスペースを調整 */
+  justify-content: flex-start;
   margin-bottom: 20px;
 }
 
-button {
-  padding: 10px 20px;
+.action-button {
+  padding: 8px 12px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -24,46 +25,65 @@ button {
   color: #333; /* 黒に近いグレー */
 }
 
-button:hover {
+.action-button:hover {
   background-color: #bbb; /* ホバー時の色もグレー */
 }
 
-h2 {
-  font-size: 1.5em;
-  color: #777777; /* タイトルの色を濃いグレーに変更 */
+.add-task-button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #d3d3d3; /* 明るいグレー */
+  color: #333; /* 黒に近いグレー */
 }
 
-h3 {
-  font-size: 1.2em;
-  color: #777777; /* タイトルの色を濃いグレーに変更 */
+.add-task-button:hover {
+  background-color: #bbb; /* ホバー時の色もグレー */
 }
 
-.holiday-week-container {
+.comparison-settings {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* ドロップダウンリストやチェックボックス間のスペース */
+  margin-bottom: 10px; /* マージンを少し小さくする */
+}
+
+.comparison-settings select {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 12px; /* フォントサイズを小さくする */
+  width: auto; /* 幅を自動調整 */
+}
+
+.comparison-settings label {
+  margin-right: 5px;
+}
+
+.calendar-comparison {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px; /* カレンダー間のスペース */
+  align-items: flex-start; /* 上揃えにする */
+}
+
+.calendar-left {
+  width: 100%; /* カレンダーの幅を100%に設定 */
   display: flex;
   flex-direction: column;
-  margin-top: 10px;
 }
 
-.holiday-week-item {
-  margin-bottom: 5px;
-  font-weight: bold;
-  color: #e3bc08; /* 日ビューと同じ色に設定 */
+.calendar-right {
+  width: 46%; /* 比較カレンダーの幅を48%に設定 */
+  display: flex;
+  flex-direction: column;
 }
 
-.holiday-day-container {
-  margin-top: 10px;
+.compare-active .calendar-left {
+  width: 46%; /* 比較モード時にカレンダーの幅を48%に設定 */
 }
 
-.holiday-day-item {
-  font-weight: bold;
-  color: #e3bc08;
-}
-
-.holiday-item { /* 共通クラスを作成 */
-  font-weight: bold;
-  color: #e3bc08;
-}
-
-.mwl-calendar-month-view, .mwl-calendar-week-view, .mwl-calendar-day-view {
-  height: calc(100vh - 160px); /* カレンダーの高さを調整してコンテナ内に収める */
+.full-width {
+  width: 95%; /* 全幅表示用のクラス */
 }

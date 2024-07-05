@@ -1,11 +1,10 @@
-// src\app\core\services\task.service.ts
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Task } from '../models/task.model';
 import { HolidayService } from './holiday.service';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { TaskDetailComponent } from '../../components/task-detail/task-detail.component';
-import { Observable, of, BehaviorSubject } from 'rxjs';
+import { Observable, of, BehaviorSubject, combineLatest } from 'rxjs';
 import { endOfMonth, subDays } from 'date-fns';
 import { AuthService } from './auth.service';
 import { switchMap, map } from 'rxjs/operators';
@@ -103,12 +102,14 @@ export class TaskService {
     const userId = this.getCurrentUserId();
     if (userId) {
       console.log('Updating task for user:', userId, task);
+      console.log('Exclude dates before update:', task.repeatSettings?.excludeDates);
       return this.firestore
         .collection(`users/${task.userId}/tasks`)
         .doc(task.id)
         .set(task, { merge: true }) // merge オプションを追加
         .then(() => {
           console.log('Task successfully updated in Firestore:', task);
+          console.log('Exclude dates after update:', task.repeatSettings?.excludeDates);
           this.taskUpdatedSource.next();
         })
         .catch(error => {
@@ -121,9 +122,6 @@ export class TaskService {
       return Promise.reject(error);
     }
   }
-  
-  
-  
 
   duplicateTask(task: Task): Promise<void> {
     const userId = this.getCurrentUserId();
@@ -139,14 +137,13 @@ export class TaskService {
   }
 
   deleteTask(task: Task): Promise<void> {
-    const userId = this.getCurrentUserId();
-    if (userId) {
-      return this.firestore.collection(`users/${userId}/tasks`).doc(task.id).delete().then(() => {
+    return this.firestore
+      .collection(`users/${task.userId}/tasks`)
+      .doc(task.id)
+      .delete()
+      .then(() => {
         this.taskUpdatedSource.next();
       });
-    } else {
-      return Promise.reject('User not authenticated');
-    }
   }
 
   openTaskDetail(task: Task) {
@@ -231,4 +228,39 @@ export class TaskService {
   private generateId(): string {
     return Math.random().toString(36).substr(2, 9);
   }
+
+ 
+  getTasksByProjectIds(projectIds: string[]): Observable<Task[]> {
+    if (projectIds.length === 0) {
+      return of([] as Task[]);
+    }
+  
+    console.log('Fetching tasks for project IDs:', projectIds);
+  
+    return this.authService.user$.pipe(
+      switchMap(user => {
+        if (!user) {
+          return of([] as Task[]);
+        }
+  
+        const tasksObservables: Observable<Task[]>[] = projectIds.map(projectId => 
+          this.firestore.collection<Task>(`users/${user.uid}/tasks`, ref => {
+            console.log(`Querying tasks for projectId: ${projectId}`);
+            return ref.where('projectId', '==', projectId);
+          }).valueChanges()
+        );
+  
+        return combineLatest(tasksObservables).pipe(
+          map((tasksArray: Task[][]) => {
+            const flatTasks = tasksArray.flat();
+            console.log('Fetched tasks:', flatTasks);
+            return flatTasks;
+          })
+        );
+      })
+    );
+  }
+  
+  
+
 }

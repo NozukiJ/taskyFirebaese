@@ -1,10 +1,12 @@
+/* src\app\app.component.css */
 .app-container {
   display: flex;
   height: 100vh;
+  width: 100vw; /* 横幅を100vwに設定 */
 }
 
 .side-nav {
-  width: 200px;
+  width: 200px; /* サイドナビの幅を固定 */
   background-color: #f8f9fa;
   display: flex;
   flex-direction: column;
@@ -52,6 +54,13 @@
 
 .content {
   flex-grow: 1;
-  padding: 20px;
+  padding: 30px;
   overflow-y: auto;
+  /* width: calc(100% - 220px); サイドナビを除いた幅に設定 */
+  /* margin-left: 220px; サイドナビの幅を確保 */
+  display: flex;
+  flex-direction: column;
+  margin-right: 0; /* 右側の余白を0に設定 */
+  padding-right: 0; /* 右側のパディングを0に設定 */
 }
+
