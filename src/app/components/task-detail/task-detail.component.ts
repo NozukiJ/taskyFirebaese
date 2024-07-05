@@ -96,9 +96,15 @@ export class TaskDetailComponent implements OnInit {
 
   async saveTask() {
     console.log('saveTask called');
+<<<<<<< HEAD
     console.log('Task before save:', this.editedTask);
     
     if (this.editedTask.reminderTime && this.editedTask.reminderTime.value !== null) {
+=======
+    console.log('Task before save:', this.task);
+    
+    if (this.task.reminderTime && this.task.reminderTime.value !== null) {
+>>>>>>> origin/master
       const timeBeforeStart = this.calculateReminderTime({
         value: this.editedTask.reminderTime.value,
         unit: this.editedTask.reminderTime.unit
@@ -107,10 +113,17 @@ export class TaskDetailComponent implements OnInit {
     }
   
     try {
+<<<<<<< HEAD
       console.log('Task before update/add:', this.editedTask);
       if (this.editedTask.id) {
         await this.taskService.updateTask(this.editedTask); // 既存のタスクを更新
         console.log('Task updated:', this.editedTask);
+=======
+      console.log('Task before update/add:', this.task);
+      if (this.task.id) {
+        await this.taskService.updateTask(this.task); // 既存のタスクを更新
+        console.log('Task updated:', this.task);
+>>>>>>> origin/master
       } else {
         await this.taskService.addTask(this.editedTask); // 新しいタスクを追加
         console.log('New task added:', this.editedTask);
@@ -172,6 +185,7 @@ export class TaskDetailComponent implements OnInit {
 
   addExcludeDate() {
     console.log('addExcludeDate called');
+<<<<<<< HEAD
     if (!this.editedTask.repeatSettings) {
       this.editedTask.repeatSettings = { frequency: 'none', businessDaysOnly: false, excludeDates: [] };
     }
@@ -182,16 +196,35 @@ export class TaskDetailComponent implements OnInit {
       this.editedTask.repeatSettings.excludeDates.push(this.excludeDate);
       console.log('Exclude date before reset:', this.excludeDate);
       console.log('Updated exclude dates:', this.editedTask.repeatSettings.excludeDates);
+=======
+    if (!this.task.repeatSettings) {
+      this.task.repeatSettings = { frequency: 'none', businessDaysOnly: false, excludeDates: [] };
+    }
+    if (!this.task.repeatSettings.excludeDates) {
+      this.task.repeatSettings.excludeDates = [];
+    }
+    if (this.excludeDate) {
+      this.task.repeatSettings.excludeDates.push(this.excludeDate);
+      console.log('Exclude date before reset:', this.excludeDate);
+      console.log('Updated exclude dates:', this.task.repeatSettings.excludeDates);
+>>>>>>> origin/master
       this.excludeDate = '';
     }
   }
 
   removeExcludeDate(date: string) {
     console.log('removeExcludeDate called');
+<<<<<<< HEAD
     if (this.editedTask.repeatSettings && this.editedTask.repeatSettings.excludeDates) {
       this.editedTask.repeatSettings.excludeDates = this.editedTask.repeatSettings.excludeDates.filter(d => d !== date);
       console.log('Exclude date removed:', date);
       console.log('Updated exclude dates:', this.editedTask.repeatSettings.excludeDates);
+=======
+    if (this.task.repeatSettings && this.task.repeatSettings.excludeDates) {
+      this.task.repeatSettings.excludeDates = this.task.repeatSettings.excludeDates.filter(d => d !== date);
+      console.log('Exclude date removed:', date);
+      console.log('Updated exclude dates:', this.task.repeatSettings.excludeDates);
+>>>>>>> origin/master
     }
   }
 
