@@ -1,5 +1,6 @@
 <!-- src\app\components\project-detail\project-detail.component.html -->
-<div class="project-detail-container">
+<div class="modal-overlay" *ngIf="project"></div>
+<div class="project-detail-container" *ngIf="project">
   <h3>{{ project.name }}</h3>
   <div *ngIf="isOwner">
     <button (click)="updateProject()">保存</button>
@@ -9,7 +10,7 @@
 
   <h4>オーナー</h4>
   <ul>
-    <li *ngFor="let owner of owners">
+    <li *ngFor="let owner of ownersCopy">
       {{ owner.displayName }}
       <button *ngIf="isOwner && owner.uid !== currentUserUid" (click)="removeOwner(owner)">削除</button>
     </li>
@@ -17,15 +18,20 @@
 
   <h4>メンバー</h4>
   <ul>
-    <li *ngFor="let member of members">
+    <li *ngFor="let member of membersCopy">
       {{ member.displayName }}
       <button (click)="removeMember(member)">削除</button>
     </li>
   </ul>
 
-  <h4>メンバー追加</h4>
-  <app-user-search (userSelected)="addMembers($event)"></app-user-search>
+  <h4>ユーザー検索</h4>
+  <app-project-user-search (userSelected)="handleUserSelected($event)"></app-project-user-search>
 
-  <h4>オーナー追加</h4>
-  <app-user-search (userSelected)="addOwners($event)"></app-user-search>
+  <ul>
+    <li *ngFor="let user of searchedUsers">
+      {{ user.displayName }}
+      <button (click)="addMember(user)">メンバー追加</button>
+      <button (click)="addOwner(user)">オーナー追加</button>
+    </li>
+  </ul>
 </div>

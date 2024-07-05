@@ -3,6 +3,7 @@ import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { HttpClientModule } from '@angular/common/http';
 import { CalendarModule, DateAdapter } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
@@ -17,7 +18,7 @@ import { AuthService } from './core/services/auth.service';
 import { ProjectService } from './core/services/project.service';
 import { TaskService } from './core/services/task.service';
 import { HighchartsChartModule } from 'highcharts-angular';
-import { AppComponent } from './app.component'; // 追加: AppComponentのインポート
+import { AppComponent } from './app.component';
 
 @NgModule({
   imports: [
@@ -25,6 +26,7 @@ import { AppComponent } from './app.component'; // 追加: AppComponentのイン
     BrowserAnimationsModule,
     FormsModule,
     MatDialogModule,
+    MatSnackBarModule,
     HttpClientModule,
     CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory }),
     AngularFireModule.initializeApp(environment.firebaseConfig),
@@ -40,7 +42,7 @@ import { AppComponent } from './app.component'; // 追加: AppComponentのイン
 })
 export class AppModule { }
 
-bootstrapApplication(AppComponent, { // AppComponentの使用
+bootstrapApplication(AppComponent, {
   providers: [
     importProvidersFrom(AppModule),
     provideRouter(routes)

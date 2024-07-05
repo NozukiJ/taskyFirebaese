@@ -1,8 +1,12 @@
 <div class="task-list-container">
-  <div class="task-actions">
+  <div class="task-actions" *ngIf="!isOtherUser">
     <button class="add-task-btn" (click)="openAddTaskDialog()">＋ タスクを追加</button>
     <button (click)="openAddProjectDialog()" class="action-btn">＋ プロジェクトを追加</button>
     <button (click)="deleteSelectedTasks()" class="action-btn">選択したタスクを削除</button>
+    <button (click)="duplicateSelectedTasks()" class="action-btn">選択したタスクを複製</button>
+  </div>
+  <div class="task-actions" *ngIf="isOtherUser">
+    <button (click)="duplicateSelectedTasksAsMine()" class="action-btn">選択したタスクを自分のタスクとして複製</button>
   </div>
   <div class="task-filters">
     <div class="filter-group">
@@ -53,6 +57,7 @@
     <!-- リストのヘッダー -->
     <li class="task-header">
       <div class="task-header-content">
+        <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleSelectAll()" /> <!-- 追加: 全選択用のチェックボックス -->
         <span class="task-header-item">選択</span>
         <span class="task-header-item">タイトル</span>
         <span class="task-header-item">プロジェクト</span> <!-- プロジェクト名の列 -->

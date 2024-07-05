@@ -1,31 +1,26 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+// src\app\components\project-user-search\project-user-search.component.ts
+import { Component, Output, EventEmitter } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { User } from '../../core/models/user.model';
-import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { TaskService } from '../../core/services/task.service';
-import { TaskListComponent } from '../task-list/task-list.component';
+import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-user-search',
-  templateUrl: './user-search.component.html',
-  styleUrls: ['./user-search.component.css'],
+  selector: 'app-project-user-search',
+  templateUrl: './project-user-search.component.html',
+  styleUrls: ['./project-user-search.component.css'],
   standalone: true,
-  imports: [FormsModule, CommonModule, TaskListComponent]
+  imports: [CommonModule, FormsModule]
 })
-export class UserSearchComponent {
+export class ProjectUserSearchComponent {
   searchTerm: string = '';
   users: User[] = [];
-  selectedUserId: string | null = null;
-  notificationMessage: string | null = null;
   @Output() userSelected = new EventEmitter<User[]>();
 
-  constructor(private firestore: AngularFirestore, private taskService: TaskService) {}
+  constructor(private firestore: AngularFirestore) {}
 
   searchUsers() {
-    // 検索前にユーザーリストと選択されたユーザーIDをリセット
-    this.users = [];
-    this.selectedUserId = null;
+    this.users = []; 
 
     this.firestore.collection<User>('users', ref =>
       ref.where('email', '==', this.searchTerm)
@@ -33,6 +28,7 @@ export class UserSearchComponent {
       querySnapshot.forEach(doc => {
         this.users.push({ ...doc.data(), uid: doc.id });
       });
+      this.userSelected.emit(this.users);
     });
 
     this.firestore.collection<User>('users', ref =>
@@ -41,6 +37,7 @@ export class UserSearchComponent {
       querySnapshot.forEach(doc => {
         this.users.push({ ...doc.data(), uid: doc.id });
       });
+      this.userSelected.emit(this.users);
     });
 
     this.firestore.collection<User>('users', ref =>
@@ -49,17 +46,7 @@ export class UserSearchComponent {
       querySnapshot.forEach(doc => {
         this.users.push({ ...doc.data(), uid: doc.id });
       });
+      this.userSelected.emit(this.users);
     });
-  }
-
-  selectUser(userId: string) {
-    this.selectedUserId = userId;
-  }
-
-  showNotificationMessage(message: string) {
-    this.notificationMessage = message;
-    setTimeout(() => {
-      this.notificationMessage = null;
-    }, 3000);
   }
 }

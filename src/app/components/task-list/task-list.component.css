@@ -1,3 +1,4 @@
+/* src\app\components\task-list\task-list.component.css */
 .task-list-container {
     padding: 20px;
     background-color: #f9f9f9;
@@ -75,7 +76,7 @@
   
   .task-header-content {
     display: grid;
-    grid-template-columns: 5% 15% 10% 10% 10% 15% 15% 15% 5%;
+    grid-template-columns: 1.5% 3.5% 15% 10% 10% 10% 15% 15% 15% 5%;
     width: 100%;
   }
   

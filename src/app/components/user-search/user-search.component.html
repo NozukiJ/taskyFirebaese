@@ -1,14 +1,23 @@
 <div>
-    <input type="text" [(ngModel)]="searchTerm" placeholder="メールアドレス、ユーザーID、ユーザー名で検索" />
-    <button (click)="searchUsers()">検索</button>
-  
-    <ul>
-      <li *ngFor="let user of users">
-        <input type="checkbox" [(ngModel)]="user.selected" /> <!-- チェックボックスを追加 -->
-        {{ user.displayName }} {{ user.email }}
-      </li>
-    </ul>
-  
-    <button (click)="selectUsers()">選択したユーザーを追加</button>
+  <input type="text" [(ngModel)]="searchTerm" placeholder="メールアドレス、ユーザーID、ユーザー名で検索" />
+  <button (click)="searchUsers()">検索</button>
+
+  <ul>
+    <li *ngFor="let user of users">
+      {{ user.displayName }} {{ user.email }}
+      <button (click)="selectUser(user.uid)">タスクを表示する</button>
+    </li>
+  </ul>
+
+  <div *ngIf="notificationMessage" class="notification">
+    {{ notificationMessage }}
   </div>
-  
+
+  <app-task-list 
+    *ngIf="selectedUserId" 
+    [userId]="selectedUserId" 
+    [isOtherUser]="true" 
+    [isReadOnly]="true" 
+    (taskDuplicated)="showNotificationMessage($event)">
+  </app-task-list>
+</div>

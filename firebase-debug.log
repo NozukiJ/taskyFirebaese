@@ -1,0 +1,19 @@
+[debug] [2024-07-05T11:24:42.942Z] ----------------------------------------------------------------------
+[debug] [2024-07-05T11:24:42.943Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\junic\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy
+[debug] [2024-07-05T11:24:42.944Z] CLI Version:   13.12.0
+[debug] [2024-07-05T11:24:42.944Z] Platform:      win32
+[debug] [2024-07-05T11:24:42.944Z] Node Version:  v20.14.0
+[debug] [2024-07-05T11:24:42.944Z] Time:          Fri Jul 05 2024 20:24:42 GMT+0900 (日本標準時)
+[debug] [2024-07-05T11:24:42.944Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2024-07-05T11:24:42.994Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-07-05T11:24:42.995Z] > authorizing via signed-in user (junichi.nozuki@pathoslogos.co.jp)
+[debug] [2024-07-05T11:24:42.995Z] [iam] checking project nozuki3rd for permissions ["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update","firebaserules.releases.create","firebaserules.releases.update","firebaserules.rulesets.create"]
+[debug] [2024-07-05T11:24:42.996Z] > refreshing access token with scopes: []
+[debug] [2024-07-05T11:24:42.997Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2024-07-05T11:24:42.997Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2024-07-05T11:24:43.202Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2024-07-05T11:24:43.202Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2024-07-05T11:24:43.218Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/nozuki3rd:testIamPermissions [none]
+[debug] [2024-07-05T11:24:43.218Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/nozuki3rd:testIamPermissions x-goog-quota-user=projects/nozuki3rd
+[debug] [2024-07-05T11:24:43.219Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/nozuki3rd:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update","firebaserules.releases.create","firebaserules.releases.update","firebaserules.rulesets.create"]}

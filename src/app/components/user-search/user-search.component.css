@@ -1,0 +1,11 @@
+.notification {
+    /* position: fixed;
+    top: 0; */
+    width: 100%;
+    background-color: #d3d3d3;
+    color: black;
+    text-align: center;
+    padding: 10px;
+    z-index: 1000;
+  }
+  

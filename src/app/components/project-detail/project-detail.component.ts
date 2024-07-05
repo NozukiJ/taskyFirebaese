@@ -1,4 +1,3 @@
-// src\app\components\project-detail\project-detail.component.ts
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
@@ -6,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Project } from '../../core/models/project.model';
 import { ProjectService } from '../../core/services/project.service';
 import { UserService } from '../../core/services/user.service';
-import { UserSearchComponent } from '../user-search/user-search.component';
+import { ProjectUserSearchComponent } from '../project-user-search/project-user-search.component';
 import { User } from '../../core/models/user.model';
 import { AuthService } from '../../core/services/auth.service';
 
@@ -15,16 +14,19 @@ import { AuthService } from '../../core/services/auth.service';
   templateUrl: './project-detail.component.html',
   styleUrls: ['./project-detail.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule, UserSearchComponent]
+  imports: [CommonModule, FormsModule, ProjectUserSearchComponent]
 })
 export class ProjectDetailComponent implements OnInit {
   project: Project;
-  projectCopy: Project;
+  projectCopy: Project; // プロジェクトのコピーを作成
   members: User[] = [];
+  membersCopy: User[] = []; // メンバーのコピーを作成
   owners: User[] = [];
+  ownersCopy: User[] = []; // オーナーのコピーを作成
   colors: string[] = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'gray', 'black', 'white'];
   isOwner: boolean = false;
   currentUserUid: string | undefined;
+  searchedUsers: User[] = []; // 検索結果のユーザーを保持するプロパティ
 
   constructor(
     public dialogRef: MatDialogRef<ProjectDetailComponent>,
@@ -48,11 +50,12 @@ export class ProjectDetailComponent implements OnInit {
 
   loadMembers() {
     this.members = [];
+    this.membersCopy = [];
     this.projectCopy.members.forEach(memberId => {
       this.userService.getUserById(memberId).subscribe(user => {
         if (user) {
           this.members.push({ ...user, uid: memberId });
-          console.log('Member loaded:', user);
+          this.membersCopy.push({ ...user, uid: memberId }); // コピーも作成
         }
       });
     });
@@ -60,11 +63,12 @@ export class ProjectDetailComponent implements OnInit {
 
   loadOwners() {
     this.owners = [];
+    this.ownersCopy = [];
     this.projectCopy.owners.forEach(ownerId => {
       this.userService.getUserById(ownerId).subscribe(user => {
         if (user) {
           this.owners.push({ ...user, uid: ownerId });
-          console.log('Owner loaded:', user);
+          this.ownersCopy.push({ ...user, uid: ownerId }); // コピーも作成
         }
       });
     });
@@ -80,6 +84,8 @@ export class ProjectDetailComponent implements OnInit {
 
   async updateProject() {
     try {
+      this.projectCopy.members = this.membersCopy.map(member => member.uid);
+      this.projectCopy.owners = this.ownersCopy.map(owner => owner.uid);
       await this.projectService.updateProject(this.projectCopy);
       this.dialogRef.close(this.projectCopy);
     } catch (error: any) {
@@ -87,52 +93,34 @@ export class ProjectDetailComponent implements OnInit {
       alert(`プロジェクトの保存に失敗しました: ${error.message}`);
     }
   }
-  
 
+  handleUserSelected(users: User[]) {
+    this.searchedUsers = users; // 検索結果を保持
+  }
 
-  addMembers(users: User[]) {
-    const existingMembers = users.filter(user => this.projectCopy.members.includes(user.uid));
-
-    if (existingMembers.length > 0) {
-      alert('選択されたユーザーは既にメンバーです。');
+  addMember(user: User) {
+    if (!this.membersCopy.some(member => member.uid === user.uid)) {
+      this.membersCopy.push(user);
     } else {
-      const newMembers = users.filter(user => !this.projectCopy.members.includes(user.uid));
-      this.projectCopy.members.push(...newMembers.map(user => user.uid));
-      this.loadMembers();
+      alert('選択されたユーザーは既にメンバーです。');
     }
   }
 
-  addOwners(users: User[]) {
-    const existingOwners = users.filter(user => this.projectCopy.owners.includes(user.uid));
-
-    if (existingOwners.length > 0) {
-      alert('選択されたユーザーは既にオーナーです。');
+  addOwner(user: User) {
+    if (!this.ownersCopy.some(owner => owner.uid === user.uid)) {
+      this.ownersCopy.push(user);
     } else {
-      const newOwners = users.filter(user => !this.projectCopy.owners.includes(user.uid));
-      this.projectCopy.owners.push(...newOwners.map(user => user.uid));
-      this.loadOwners();
+      alert('選択されたユーザーは既にオーナーです。');
     }
   }
 
   removeMember(user: User) {
-    if (user && user.uid) {
-      console.log('Removing member with ID:', user.uid);
-      this.projectCopy.members = this.projectCopy.members.filter(id => id !== user.uid);
-      this.members = this.members.filter(member => member.uid !== user.uid);
-      console.log('Member removed:', user);
-    } else {
-      console.error('Cannot remove member: user ID is undefined or user object is invalid', user);
-    }
+    this.membersCopy = this.membersCopy.filter(member => member.uid !== user.uid);
   }
 
   removeOwner(user: User) {
-    if (user && user.uid && user.uid !== this.currentUserUid) {
-      console.log('Removing owner with ID:', user.uid);
-      this.projectCopy.owners = this.projectCopy.owners.filter(id => id !== user.uid);
-      this.owners = this.owners.filter(owner => owner.uid !== user.uid);
-      console.log('Owner removed:', user);
-    } else {
-      console.error('Cannot remove owner: user ID is undefined or user object is invalid', user);
+    if (user.uid !== this.currentUserUid) {
+      this.ownersCopy = this.ownersCopy.filter(owner => owner.uid !== user.uid);
     }
   }
 

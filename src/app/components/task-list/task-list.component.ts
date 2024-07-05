@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Input, Inject, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -13,6 +13,7 @@ import { SubtaskDetailComponent } from '../subtask-detail/subtask-detail.compone
 import { ProjectAddComponent } from '../project-add/project-add.component';
 import { Project } from '../../core/models/project.model';
 import { Observable } from 'rxjs';
+import { v4 as uuidv4 } from 'uuid'; // 追加
 
 @Component({
   standalone: true,
@@ -22,6 +23,10 @@ import { Observable } from 'rxjs';
   styleUrls: ['./task-list.component.css']
 })
 export class TaskListComponent implements OnInit {
+  @Input() userId: string | null = null; // 追加: ユーザーIDを受け取る
+  @Input() isOtherUser: boolean = false; // 追加: 他のユーザーのタスク一覧かどうかを判別するフラグ
+  @Input() isReadOnly: boolean = false; // 追加: 読み取り専用フラグ
+  @Output() taskDuplicated = new EventEmitter<string>(); // 追加: メッセージを伝達するイベント
   tasks$: Observable<Task[]> | null = null;
   projects$: Observable<Project[]> | null = null;
   tasks: Task[] = [];
@@ -32,6 +37,7 @@ export class TaskListComponent implements OnInit {
   selectedStatus: string = '全てのステータス';
   searchText: string = '';
   sortOrder: string = 'startDateAsc';
+  selectAll: boolean = false; // 全選択チェックボックスの状態
 
   constructor(
     @Inject(TaskService) private taskService: TaskService,
@@ -40,7 +46,12 @@ export class TaskListComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.tasks$ = this.taskService.getTasks();
+    if (this.userId) {
+      this.tasks$ = this.taskService.getTasksByUserId(this.userId);
+    } else {
+      this.tasks$ = this.taskService.getTasks();
+    }
+
     this.projects$ = this.projectService.getProjects();
 
     this.tasks$?.subscribe(tasks => { // Nullチェックを追加
@@ -54,6 +65,13 @@ export class TaskListComponent implements OnInit {
       if (projects) { // projects が null でないことを確認
         this.projects = projects;
       }
+    });
+  }
+
+  toggleSelectAll() {
+    this.tasks.forEach(task => {
+      task.selected = this.selectAll;
+      task.subtasks.forEach(subtask => subtask.selected = this.selectAll);
     });
   }
 
@@ -142,7 +160,56 @@ export class TaskListComponent implements OnInit {
       task.subtasks = task.subtasks.filter(subtask => !subtask.selected);
       return true;
     });
+    this.deselectAllTasks();
     this.saveTasks();
+  }
+
+  async duplicateSelectedTasks() {
+    const tasksToDuplicate = this.tasks.filter(task => task.selected);
+    const duplicatePromises = tasksToDuplicate.map(task => {
+      const newTask: Task = {
+        ...task,
+        id: uuidv4(), // 新しいIDを生成
+        selected: false, // 選択状態をリセット
+        subtasks: task.subtasks.map(subtask => ({
+          ...subtask,
+          id: uuidv4(), // 新しいIDを生成
+          selected: false // サブタスクの選択状態をリセット
+        }))
+      };
+      return this.taskService.duplicateTask(newTask);
+    });
+
+    await Promise.all(duplicatePromises);
+    this.deselectAllTasks();
+    this.taskDuplicated.emit('選択したタスクを複製しました');
+  }
+
+  async duplicateSelectedTasksAsMine() {
+    const tasksToDuplicate = this.tasks.filter(task => task.selected);
+    const duplicatePromises = tasksToDuplicate.map(task => {
+      const newTask: Task = {
+        ...task,
+        id: uuidv4(), // 新しいIDを生成
+        projectId: '', // プロジェクトに所属しないようにする
+        selected: false, // 選択状態をリセット
+        subtasks: task.subtasks.map(subtask => ({
+          ...subtask,
+          id: uuidv4(), // 新しいIDを生成
+          selected: false // サブタスクの選択状態をリセット
+        }))
+      };
+      return this.taskService.duplicateTask(newTask);
+    });
+
+    await Promise.all(duplicatePromises);
+    this.deselectAllTasks();
+    this.taskDuplicated.emit('自分のタスクとして複製しました');
+  }
+
+  deselectAllTasks() {
+    this.tasks.forEach(task => task.selected = false);
+    this.tasks.forEach(task => task.subtasks.forEach(subtask => subtask.selected = false));
   }
 
   getPriorityLabel(priority: string): string {
@@ -199,13 +266,9 @@ export class TaskListComponent implements OnInit {
   }
 
   openTaskDetailDialog(task: Task) {
-    // 既存のダイアログを全て閉じる
-    this.dialog.closeAll();
-
-    // 新しいタスク詳細ダイアログを開く
     const dialogRef = this.dialog.open(TaskDetailComponent, {
       width: '600px',
-      data: { task }
+      data: { task, isReadOnly: this.isOtherUser, currentUserId: this.userId } // isReadOnlyプロパティを渡す
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -217,13 +280,9 @@ export class TaskListComponent implements OnInit {
   }
 
   openSubtaskDetailDialog(subtask: Subtask, task: Task) {
-    // 既存のダイアログを全て閉じる
-    this.dialog.closeAll();
-
-    // 新しいサブタスク詳細ダイアログを開く
     const dialogRef = this.dialog.open(SubtaskDetailComponent, {
       width: '400px',
-      data: { subtask, task }
+      data: { subtask, task, isReadOnly: this.isOtherUser } // isReadOnlyプロパティを渡す
     });
 
     dialogRef.afterClosed().subscribe(result => {

@@ -65,7 +65,9 @@ export class ProjectService {
       return this.firestore.collection('projects').doc(projectId).update({
         members: firebase.firestore.FieldValue.arrayUnion(userId)
       })
-      .then(() => console.log(`Member with ID: ${userId} added to project with ID: ${projectId} successfully`))
+      .then(() => {
+        console.log(`Member with ID: ${userId} added to project with ID: ${projectId} successfully`);
+      })
       .catch(error => {
         console.error(`Error adding member with ID: ${userId} to project with ID: ${projectId}`, error);
         throw error;
@@ -75,6 +77,7 @@ export class ProjectService {
       return Promise.reject('User ID is undefined');
     }
   }
+  
 
   removeMemberFromProject(projectId: string, userId: string): Promise<void> {
     if (userId) {
@@ -99,7 +102,9 @@ export class ProjectService {
       return this.firestore.collection('projects').doc(projectId).update({
         owners: firebase.firestore.FieldValue.arrayUnion(userId)
       })
-      .then(() => console.log(`Owner with ID: ${userId} added to project with ID: ${projectId} successfully`))
+      .then(() => {
+        console.log(`Owner with ID: ${userId} added to project with ID: ${projectId} successfully`);
+      })
       .catch(error => {
         console.error(`Error adding owner with ID: ${userId} to project with ID: ${projectId}`, error);
         throw error;
