@@ -22,6 +22,7 @@ export class TaskAddComponent implements OnInit {
   projects$: Observable<Project[]> | null = null;
   projects: Project[] = [];
   excludeDate: string = '';
+  currentUserUid: string | null = null;
 
   newTask: Task = {
     id: this.generateId(),
@@ -59,14 +60,18 @@ export class TaskAddComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.projects$ = this.projectService.getProjects();
-    this.projects$.subscribe(projects => {
-      this.projects = projects;
-    });
     const userId = this.taskService.getCurrentUserId();
     if (userId) {
       this.newTask.userId = userId;
+      this.currentUserUid = userId;
     }
+
+    this.projects$ = this.projectService.getProjects();
+    this.projects$.subscribe(projects => {
+      this.projects = projects.filter(project => 
+        project.members.includes(this.currentUserUid!) || project.owners.includes(this.currentUserUid!)
+      );
+    });
   }
 
   async saveTask() {

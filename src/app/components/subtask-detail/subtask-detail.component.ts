@@ -14,6 +14,7 @@ import { Subtask, Task } from '../../core/models/task.model';
 })
 export class SubtaskDetailComponent implements OnInit {
   @Input() subtask!: Subtask;
+  editedSubtask!: Subtask; // 一時的なサブタスク変数
   colors: string[] = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'gray', 'black', 'white'];
   task: Task;
 
@@ -22,15 +23,11 @@ export class SubtaskDetailComponent implements OnInit {
     public dialogRef: MatDialogRef<SubtaskDetailComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-    console.log('SubtaskDetailComponent constructor called');
-    console.log('Data received:', data);
-    
     if (data && data.subtask && data.task) {
       this.subtask = data.subtask;
       this.task = data.task;
-      console.log('Task and Subtask initialized from data:', this.task, this.subtask);
+      this.editedSubtask = { ...this.subtask }; // サブタスクを一時的な変数にコピー
     } else {
-      // サブタスクの初期化
       this.subtask = {
         id: this.generateId(),
         title: '新しいサブタスク',
@@ -44,11 +41,10 @@ export class SubtaskDetailComponent implements OnInit {
         tagColor: 'white',
         status: '未着手'
       };
-      console.log('Subtask initialized to default:', this.subtask);
+      this.editedSubtask = { ...this.subtask }; // サブタスクを一時的な変数にコピー
 
-      // タスクの初期化
       this.task = {
-        id: this.generateId(), // IDを生成
+        id: this.generateId(),
         title: '',
         description: '',
         completed: false,
@@ -72,22 +68,16 @@ export class SubtaskDetailComponent implements OnInit {
         },
         userId: ''
       };
-      console.log('Task initialized to default:', this.task);
     }
   }
 
   ngOnInit(): void {
-    console.log('SubtaskDetailComponent ngOnInit called');
     if (!this.task.subtasks) {
       this.task.subtasks = [];
-      console.log('Subtasks initialized to empty array');
     }
   }
 
   async saveSubtask() {
-    console.log('saveSubtask called');
-    console.log('Current task state:', this.task);
-
     if (!this.task || !this.task.id) {
       console.error('Task is not properly initialized.');
       return;
@@ -95,33 +85,25 @@ export class SubtaskDetailComponent implements OnInit {
 
     if (!this.task.subtasks) {
       this.task.subtasks = [];
-      console.log('Subtasks initialized in saveSubtask method');
     }
 
     const index = this.task.subtasks.findIndex(st => st.id === this.subtask.id);
     if (index !== -1) {
-      this.task.subtasks[index] = this.subtask;
-      console.log('Subtask updated:', this.subtask);
+      this.task.subtasks[index] = { ...this.editedSubtask }; // 一時的な変数からコピー
     } else {
-      this.task.subtasks.push(this.subtask);
-      console.log('Subtask added:', this.subtask);
+      this.task.subtasks.push({ ...this.editedSubtask });
     }
 
     await this.taskService.updateTask(this.task); // Firestoreに保存
-    console.log('Task updated in Firestore:', this.task);
-    this.dialogRef.close(this.subtask); // ダイアログを閉じる
-    console.log('Dialog closed with subtask:', this.subtask);
+    this.dialogRef.close(this.editedSubtask); // ダイアログを閉じる
   }
 
   cancel() {
-    console.log('cancel called');
-    this.dialogRef.close();
-    console.log('Dialog closed without saving');
+    this.dialogRef.close(); // ダイアログを閉じるだけで変更を反映しない
   }
 
   selectColor(color: string) {
-    this.subtask.tagColor = color;
-    console.log('Color selected:', color);
+    this.editedSubtask.tagColor = color;
   }
 
   private generateId(): string {

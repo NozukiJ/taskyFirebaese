@@ -9,10 +9,15 @@ import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
-import { environment } from '../environments/environment';
 import { provideRouter } from '@angular/router';
 import { routes } from './app-routing.module';
-import { AppComponent } from './app.component'; // AppComponentをインポート
+import { environment } from '../environments/environment';
+import { ProjectProgressComponent } from './components/project-progress/project-progress.component';
+import { AuthService } from './core/services/auth.service';
+import { ProjectService } from './core/services/project.service';
+import { TaskService } from './core/services/task.service';
+import { HighchartsChartModule } from 'highcharts-angular';
+import { AppComponent } from './app.component'; // 追加: AppComponentのインポート
 
 @NgModule({
   imports: [
@@ -24,14 +29,18 @@ import { AppComponent } from './app.component'; // AppComponentをインポー�
     CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory }),
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFireAuthModule,
-    AngularFirestoreModule
+    AngularFirestoreModule,
+    HighchartsChartModule
   ],
-  providers: [],
+  declarations: [
+    ProjectProgressComponent
+  ],
+  providers: [AuthService, ProjectService, TaskService],
   bootstrap: []
 })
 export class AppModule { }
 
-bootstrapApplication(AppComponent, {
+bootstrapApplication(AppComponent, { // AppComponentの使用
   providers: [
     importProvidersFrom(AppModule),
     provideRouter(routes)

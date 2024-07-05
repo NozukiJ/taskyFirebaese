@@ -9,9 +9,10 @@ import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 import { TaskAddComponent } from '../task-add/task-add.component';
 import { TaskDetailComponent } from '../task-detail/task-detail.component';
 import { Task } from '../../core/models/task.model';
-import { addDays, addWeeks, addMonths, addYears, startOfWeek, endOfWeek, isSameWeek as isSameWeekFn, isSameDay as isSameDayFn, lastDayOfMonth, subDays, isWeekend, set } from 'date-fns';
+import { addDays, addWeeks, addMonths, addYears, startOfWeek, endOfWeek, isSameWeek as isSameWeekFn, isSameDay as isSameDayFn, lastDayOfMonth, subDays, isWeekend, set, startOfMonth, endOfMonth, eachWeekOfInterval, eachDayOfInterval } from 'date-fns';
 import { from } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   standalone: true,
@@ -21,7 +22,9 @@ import { map } from 'rxjs/operators';
     CalendarCommonModule,
     CalendarMonthModule,
     CalendarDayModule,
-    CalendarWeekModule
+    CalendarWeekModule,
+    FormsModule,
+    ReactiveFormsModule
   ],
   providers: [
     CalendarUtils,
@@ -40,10 +43,20 @@ import { map } from 'rxjs/operators';
 export class CalendarComponent implements OnInit {
   view: CalendarView = CalendarView.Week; // デフォルトを週ビューに変更
   viewDate: Date = new Date();
+  compareDate: Date = new Date();
   events: CalendarEvent[] = [];
   holidayEvents: CalendarEvent[] = [];
   allEvents: CalendarEvent[] = [];
   holidays: Date[] = [];
+  compareMode: boolean = false;
+  selectedYear: number = new Date().getFullYear();
+  selectedMonth: number = new Date().getMonth() + 1;
+  selectedDay: number = new Date().getDate();
+  selectedWeek: number = 1;
+  years: number[] = [2023, 2024, 2025];
+  months: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  daysInMonth: number[] = [];
+  monthWeeks: number[] = [];
 
   CalendarView = CalendarView;
 
@@ -56,6 +69,9 @@ export class CalendarComponent implements OnInit {
   ngOnInit() {
     console.log('Initializing CalendarComponent...');
     this.loadHolidays();
+    this.updateMonthWeeks();
+    this.updateDaysInMonth();
+    this.compareDate = new Date(this.selectedYear, this.selectedMonth - 1, this.selectedDay);
   }
 
   loadHolidays() {
@@ -352,6 +368,55 @@ export class CalendarComponent implements OnInit {
     const start = startOfWeek(this.viewDate);
     const end = endOfWeek(this.viewDate);
     return `${start.getFullYear()}年${('0' + (start.getMonth() + 1)).slice(-2)}月${('0' + start.getDate()).slice(-2)}日～${end.getFullYear()}年${('0' + (end.getMonth() + 1)).slice(-2)}月${('0' + end.getDate()).slice(-2)}日`;
+  }
+
+  getCompareWeekRange(): string {
+    const start = startOfWeek(this.compareDate);
+    const end = endOfWeek(this.compareDate);
+    return `${start.getFullYear()}年${('0' + (start.getMonth() + 1)).slice(-2)}月${('0' + start.getDate()).slice(-2)}日～${end.getFullYear()}年${('0' + (end.getMonth() + 1)).slice(-2)}月${('0' + end.getDate()).slice(-2)}日`;
+  }
+
+  updateMonthWeeks(): void {
+    const start = startOfMonth(new Date(this.selectedYear, this.selectedMonth - 1));
+    const end = endOfMonth(new Date(this.selectedYear, this.selectedMonth - 1));
+    this.monthWeeks = eachWeekOfInterval({ start, end }, { weekStartsOn: 0 }).map((date, index) => index + 1);
+  }
+
+  updateDaysInMonth(): void {
+    const start = startOfMonth(new Date(this.selectedYear, this.selectedMonth - 1));
+    const end = endOfMonth(new Date(this.selectedYear, this.selectedMonth - 1));
+    this.daysInMonth = eachDayOfInterval({ start, end }).map(date => date.getDate());
+  }
+
+  onYearMonthOrWeekChange(): void {
+    this.updateMonthWeeks();
+    this.updateDaysInMonth();
+    if (this.compareMode) {
+      switch (this.view) {
+        case CalendarView.Month:
+          this.compareDate = new Date(this.selectedYear, this.selectedMonth - 1, 1);
+          break;
+        case CalendarView.Week:
+          const startOfMonthDate = startOfMonth(new Date(this.selectedYear, this.selectedMonth - 1));
+          this.compareDate = addWeeks(startOfMonthDate, this.selectedWeek - 1);
+          break;
+        case CalendarView.Day:
+          this.compareDate = new Date(this.selectedYear, this.selectedMonth - 1, this.selectedDay);
+          break;
+      }
+    }
+  }
+
+  toggleCompareMode(): void {
+    if (this.compareMode) {
+      this.onYearMonthOrWeekChange();
+    }
+  }
+
+  getWeekNumber(date: Date): number {
+    const startOfYear = new Date(date.getFullYear(), 0, 1);
+    const daysSinceStartOfYear = Math.floor((date.getTime() - startOfYear.getTime()) / (24 * 60 * 60 * 1000));
+    return Math.ceil((daysSinceStartOfYear + startOfYear.getDay() + 1) / 7);
   }
 
   isSameWeek(date1: Date, date2: Date): boolean {

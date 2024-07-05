@@ -18,7 +18,8 @@ import { Observable } from 'rxjs';
 })
 export class TaskDetailComponent implements OnInit {
   @Input() task!: Task;
-  originalTask!: Task;  // 元のタスクデータを保持するためのプロパティ
+  editedTask!: Task; // 編集用の一時的なタスク変数
+  originalTask!: Task; // 元のタスクデータを保持するためのプロパティ
   colors: string[] = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'gray', 'black', 'white'];
   reminderUnits: string[] = ['分', '時間', '日', '週'];
   projects$: Observable<Project[]> | null = null;
@@ -34,8 +35,9 @@ export class TaskDetailComponent implements OnInit {
   ) {
     console.log('TaskDetailComponent constructor called');
     if (data && data.task) {
-      this.task = { ...data.task };  // データのコピーを作成
-      this.originalTask = { ...data.task };  // 元のデータを保持
+      this.task = data.task;
+      this.originalTask = { ...data.task }; // 元のデータを保持
+      this.editedTask = { ...data.task, subtasks: [...data.task.subtasks] }; // 編集用にディープコピー
       console.log('TaskDetailComponent received task data:', this.task);
     } else {
       // タスクが提供されなかった場合に初期化
@@ -64,6 +66,8 @@ export class TaskDetailComponent implements OnInit {
         },
         userId: ''
       };
+      this.originalTask = { ...this.task }; // 元のデータを保持
+      this.editedTask = { ...this.task, subtasks: [...this.task.subtasks] }; // 編集用にディープコピー
       console.log('Task initialized to default:', this.task);
     }
   }
@@ -76,60 +80,59 @@ export class TaskDetailComponent implements OnInit {
       console.log('Projects loaded:', this.projects);
     });
 
-    if (!this.task.reminderTime) {
-      this.task.reminderTime = {
+    if (!this.editedTask.reminderTime) {
+      this.editedTask.reminderTime = {
         value: null,
         unit: '分'
       };
     }
 
-    if (!this.task.subtasks) {
-      this.task.subtasks = [];
+    if (!this.editedTask.subtasks) {
+      this.editedTask.subtasks = [];
     }
 
-    console.log('Loaded existing task:', this.task);
+    console.log('Loaded existing task:', this.editedTask);
   }
 
   async saveTask() {
     console.log('saveTask called');
-    if (this.task.reminderTime && this.task.reminderTime.value !== null) {
+    console.log('Task before save:', this.editedTask);
+    
+    if (this.editedTask.reminderTime && this.editedTask.reminderTime.value !== null) {
       const timeBeforeStart = this.calculateReminderTime({
-        value: this.task.reminderTime.value,
-        unit: this.task.reminderTime.unit
+        value: this.editedTask.reminderTime.value,
+        unit: this.editedTask.reminderTime.unit
       });
-      this.reminderService.setReminder(this.task, timeBeforeStart);
+      this.reminderService.setReminder(this.editedTask, timeBeforeStart);
     }
   
     try {
-      console.log('Task before save:', this.task);
-      if (this.task.id) {
-        await this.taskService.updateTask(this.task); // 既存のタスクを更新
-        console.log('Task updated:', this.task);
+      console.log('Task before update/add:', this.editedTask);
+      if (this.editedTask.id) {
+        await this.taskService.updateTask(this.editedTask); // 既存のタスクを更新
+        console.log('Task updated:', this.editedTask);
       } else {
-        await this.taskService.addTask(this.task); // 新しいタスクを追加
-        console.log('New task added:', this.task);
+        await this.taskService.addTask(this.editedTask); // 新しいタスクを追加
+        console.log('New task added:', this.editedTask);
       }
-      this.dialogRef.close(this.task);  // ダイアログを閉じてタスクを返す
-      console.log('Dialog closed with task:', this.task);
+      this.dialogRef.close(this.editedTask);  // ダイアログを閉じてタスクを返す
+      console.log('Dialog closed with task:', this.editedTask);
     } catch (error) {
       console.error('Error updating task:', error);
     }
   }
-  
-  
-  
 
   async duplicateTask() {
     console.log('duplicateTask called');
-    await this.taskService.duplicateTask(this.task); // Firestoreに複製
+    await this.taskService.duplicateTask(this.editedTask); // Firestoreに複製
     this.dialogRef.close();
     console.log('Dialog closed after duplicating task');
   }
 
   addSubtask() {
     console.log('addSubtask called');
-    if (!this.task.subtasks) {
-      this.task.subtasks = [];
+    if (!this.editedTask.subtasks) {
+      this.editedTask.subtasks = [];
     }
     const newSubtask: Subtask = {
       id: this.generateId(),
@@ -144,16 +147,14 @@ export class TaskDetailComponent implements OnInit {
       tagColor: 'white',
       status: '未着手'
     };
-    this.task.subtasks.push(newSubtask);
-    this.saveTask();
+    this.editedTask.subtasks.push(newSubtask);
     console.log('New subtask added:', newSubtask);
   }
 
   deleteSubtask(index: number) {
     console.log('deleteSubtask called');
-    if (this.task.subtasks) {
-      this.task.subtasks.splice(index, 1);
-      this.saveTask();
+    if (this.editedTask.subtasks) {
+      this.editedTask.subtasks.splice(index, 1);
       console.log('Subtask deleted at index:', index);
     }
   }
@@ -165,24 +166,32 @@ export class TaskDetailComponent implements OnInit {
   }
 
   selectColor(color: string) {
-    this.task.tagColor = color;
+    this.editedTask.tagColor = color;
     console.log('Color selected:', color);
   }
 
   addExcludeDate() {
     console.log('addExcludeDate called');
+    if (!this.editedTask.repeatSettings) {
+      this.editedTask.repeatSettings = { frequency: 'none', businessDaysOnly: false, excludeDates: [] };
+    }
+    if (!this.editedTask.repeatSettings.excludeDates) {
+      this.editedTask.repeatSettings.excludeDates = [];
+    }
     if (this.excludeDate) {
-      this.task.repeatSettings?.excludeDates?.push(this.excludeDate);
+      this.editedTask.repeatSettings.excludeDates.push(this.excludeDate);
+      console.log('Exclude date before reset:', this.excludeDate);
+      console.log('Updated exclude dates:', this.editedTask.repeatSettings.excludeDates);
       this.excludeDate = '';
-      console.log('Exclude date added:', this.excludeDate);
     }
   }
 
   removeExcludeDate(date: string) {
     console.log('removeExcludeDate called');
-    if (this.task.repeatSettings?.excludeDates) {
-      this.task.repeatSettings.excludeDates = this.task.repeatSettings.excludeDates.filter(d => d !== date);
+    if (this.editedTask.repeatSettings && this.editedTask.repeatSettings.excludeDates) {
+      this.editedTask.repeatSettings.excludeDates = this.editedTask.repeatSettings.excludeDates.filter(d => d !== date);
       console.log('Exclude date removed:', date);
+      console.log('Updated exclude dates:', this.editedTask.repeatSettings.excludeDates);
     }
   }
 

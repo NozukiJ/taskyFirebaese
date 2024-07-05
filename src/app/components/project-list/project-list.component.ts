@@ -12,7 +12,7 @@ import { TaskAddComponent } from '../task-add/task-add.component';
 import { ProjectAddComponent } from '../project-add/project-add.component';
 import { TaskDetailComponent } from '../task-detail/task-detail.component';
 import { ProjectDetailComponent } from '../project-detail/project-detail.component';
-import { AuthService } from '../../core/services/auth.service'; // AuthServiceをインポート
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-project-list',
@@ -27,6 +27,7 @@ export class ProjectListComponent implements OnInit {
   membersMap: { [key: string]: User } = {};
   ownersMap: { [key: string]: User } = {};
   currentUserUid: string | null = null; // 現在のユーザーIDを保持
+  uniqueTaskIds = new Set<string>(); // タスクの一意性を保つためのセット
 
   constructor(
     private taskService: TaskService,
@@ -46,7 +47,9 @@ export class ProjectListComponent implements OnInit {
   loadProjects() {
     console.log('Loading projects...');
     this.projectService.getProjects().subscribe(projects => {
-      this.projects = projects;
+      this.projects = projects.filter(project => 
+        project.members.includes(this.currentUserUid!) || project.owners.includes(this.currentUserUid!)
+      );
       console.log('Projects loaded:', this.projects);
       this.loadUsers();
       this.loadTasksForProjects();
@@ -56,12 +59,11 @@ export class ProjectListComponent implements OnInit {
   loadTasksForProjects() {
     console.log('Loading tasks for each project...');
     this.tasks = []; // タスクをリセット
+    this.uniqueTaskIds.clear(); // 一意なタスクIDセットをクリア
     if (this.currentUserUid) {
       this.projects.forEach(project => {
-        if (project.members.includes(this.currentUserUid!) || project.owners.includes(this.currentUserUid!)) {
-          console.log(`User is a member or owner of project: ${project.id}`);
-          this.loadTasksForUsersInProject(project.id, project.members.concat(project.owners));
-        }
+        console.log(`User is a member or owner of project: ${project.id}`);
+        this.loadTasksForUsersInProject(project.id, project.members.concat(project.owners));
       });
 
       // プロジェクト無所属のタスクをロード
@@ -70,29 +72,24 @@ export class ProjectListComponent implements OnInit {
   }
 
   loadTasksForUsersInProject(projectId: string, userIds: string[]) {
-    const uniqueTaskIds = new Set<string>();
-
     userIds.forEach(userId => {
       this.taskService.getTasksByUserId(userId).subscribe(tasks => {
         tasks.forEach(task => {
-          if (task.projectId === projectId && !uniqueTaskIds.has(task.id)) {
-            uniqueTaskIds.add(task.id);
+          if (task.projectId === projectId && !this.uniqueTaskIds.has(task.id)) {
+            this.uniqueTaskIds.add(task.id);
             this.tasks.push(task);
           }
         });
-        console.log(`Tasks for project ${projectId} loaded:`, this.tasks);
       });
     });
   }
 
   loadUnassignedTasks() {
     console.log('Loading unassigned tasks...');
-    const uniqueTaskIds = new Set<string>();
-
     this.taskService.getTasksByUserId(this.currentUserUid!).subscribe(tasks => {
       tasks.forEach(task => {
-        if (!task.projectId && !uniqueTaskIds.has(task.id)) {
-          uniqueTaskIds.add(task.id);
+        if (!task.projectId && !this.uniqueTaskIds.has(task.id)) {
+          this.uniqueTaskIds.add(task.id);
           this.tasks.push(task);
         }
       });
@@ -171,16 +168,43 @@ export class ProjectListComponent implements OnInit {
     });
   }
 
+  
   deleteSelectedTasks() {
     console.log('Deleting selected tasks...');
     const selectedTasks = this.tasks.filter(task => task.selected);
-    selectedTasks.forEach(task => {
-      this.taskService.deleteTask(task).then(() => {
-        console.log('Deleted task:', task);
-        this.loadTasksForProjects();
-      });
+    const deletionPromises = selectedTasks.map(task => {
+      const project = this.projects.find(p => p.id === task.projectId);
+      console.log('Project found:', project);
+      if (project && project.owners.includes(this.currentUserUid!)) {
+        console.log('User is owner of the project, deleting task...');
+        return this.taskService.deleteTask(task).then(() => {
+          console.log('Deleted task:', task);
+        }).catch(error => {
+          console.error('Error deleting task:', error);
+        });
+      } else if (task.userId === this.currentUserUid) {
+        console.log('User is the creator of the task, deleting task...');
+        return this.taskService.deleteTask(task).then(() => {
+          console.log('Deleted task:', task);
+        }).catch(error => {
+          console.error('Error deleting task:', error);
+        });
+      } else {
+        console.warn('You do not have permission to delete this task:', task);
+        return Promise.resolve(); // 権限がない場合もPromiseを返す
+      }
+    });
+  
+    Promise.all(deletionPromises).then(() => {
+      this.loadTasksForProjects();
+    }).catch(error => {
+      console.error('Error in deleting tasks:', error);
     });
   }
+  
+  
+  
+  
 
   deleteSelectedProjects() {
     console.log('Deleting selected projects...');
