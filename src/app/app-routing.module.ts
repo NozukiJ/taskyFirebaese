@@ -12,6 +12,8 @@ import { ProjectDetailComponent } from './components/project-detail/project-deta
 import { UserSearchComponent } from './components/user-search/user-search.component';
 import { AuthGuard } from './core/guards/auth.guard';
 import { ProjectProgressComponent } from './components/project-progress/project-progress.component';
+import { TaskSetComponent } from './components/task-set/task-set.component';
+
 
 export const routes: Routes = [
   { path: '', redirectTo: '/calendar', pathMatch: 'full' },
@@ -25,7 +27,8 @@ export const routes: Routes = [
   { path: 'reset-password', component: ResetPasswordComponent },
   { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
   { path: 'user-search', component: UserSearchComponent, canActivate: [AuthGuard] },
-  { path: 'project-progress', component: ProjectProgressComponent, canActivate: [AuthGuard] }
+  { path: 'project-progress', component: ProjectProgressComponent, canActivate: [AuthGuard] },
+  { path: 'task-sets', component: TaskSetComponent, canActivate: [AuthGuard] }
 ];
 
 @NgModule({

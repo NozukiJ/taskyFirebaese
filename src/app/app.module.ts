@@ -19,6 +19,7 @@ import { ProjectService } from './core/services/project.service';
 import { TaskService } from './core/services/task.service';
 import { HighchartsChartModule } from 'highcharts-angular';
 import { AppComponent } from './app.component';
+import { TaskSetComponent } from './components/task-set/task-set.component';
 
 @NgModule({
   imports: [
@@ -32,7 +33,8 @@ import { AppComponent } from './app.component';
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFireAuthModule,
     AngularFirestoreModule,
-    HighchartsChartModule
+    HighchartsChartModule,
+    TaskSetComponent  // TaskSetComponentをここに追加
   ],
   declarations: [
     ProjectProgressComponent

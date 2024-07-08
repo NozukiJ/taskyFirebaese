@@ -1,30 +1,31 @@
+<!-- src\app\components\project-add\project-add.component.html -->
 <div class="project-detail-container">
-  <h2>プロジェクトを追加</h2>
-  <div>
-    <button (click)="saveProject()">保存</button>
-    <button (click)="cancel()">キャンセル</button>
+  <div class="header">
+    <h2>プロジェクトを追加</h2>
+    <div class="buttons">
+      <button (click)="saveProject()">保存</button>
+      <button (click)="cancel()">キャンセル</button>
+    </div>
   </div>
-  <div>
+  <div class="form-group">
     <label>名前:
-      <input [(ngModel)]="newProject.name" placeholder="名前">
+      <input [(ngModel)]="newProject.name" placeholder="名前" class="input-field">
     </label>
   </div>
-  <div>
+  <div class="form-group">
     <label>説明:
-      <textarea [(ngModel)]="newProject.description" placeholder="説明"></textarea>
+      <textarea [(ngModel)]="newProject.description" placeholder="説明" class="input-field"></textarea>
     </label>
   </div>
-  <div>
+  <div class="form-group dates">
     <label>開始日:
-      <input type="date" [(ngModel)]="newProject.startDate">
+      <input type="date" [(ngModel)]="newProject.startDate" class="input-field">
     </label>
-  </div>
-  <div>
     <label>終了日:
-      <input type="date" [(ngModel)]="newProject.endDate">
+      <input type="date" [(ngModel)]="newProject.endDate" class="input-field">
     </label>
   </div>
-  <div>
+  <div class="form-group">
     <label>色:</label>
     <div class="color-dropdown">
       <div *ngFor="let color of colors" 
@@ -47,8 +48,13 @@
       <button (click)="removeMember(member)">削除</button>
     </li>
   </ul>
-  <h4>メンバー追加</h4>
-  <app-user-search (userSelected)="addMembers($event)"></app-user-search>
-  <h4>オーナー追加</h4>
-  <app-user-search (userSelected)="addOwners($event)"></app-user-search>
+  <h4>ユーザー検索</h4>
+  <app-project-user-search (userSelected)="handleUserSelected($event)"></app-project-user-search>
+  <ul>
+    <li *ngFor="let user of searchedUsers">
+      {{ user.displayName }}
+      <button (click)="addMember(user)">メンバー追加</button>
+      <button (click)="addOwner(user)">オーナー追加</button>
+    </li>
+  </ul>
 </div>

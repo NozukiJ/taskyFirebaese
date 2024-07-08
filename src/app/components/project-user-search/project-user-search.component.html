@@ -1,6 +1,13 @@
 <!-- src\app\components\project-user-search\project-user-search.component.html -->
-<div>
-    <input type="text" [(ngModel)]="searchTerm" placeholder="メールアドレス、ユーザーID、ユーザー名で検索" />
-    <button (click)="searchUsers()">検索</button>
-  </div>
-  
+<div class="search-container">
+  <input [(ngModel)]="searchTerm" placeholder="ユーザー名を入力" class="input-field">
+  <button (click)="searchUsers()">検索</button>
+</div>
+<!-- "ユーザー名またはメールアドレスを入力" -->
+<ul>
+  <li *ngFor="let user of users">
+    {{ user.displayName }}
+    <button (click)="addMember(user)">メンバー追加</button>
+    <button (click)="addOwner(user)">オーナー追加</button>
+  </li>
+</ul>

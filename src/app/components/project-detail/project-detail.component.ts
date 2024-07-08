@@ -9,6 +9,11 @@ import { ProjectUserSearchComponent } from '../project-user-search/project-user-
 import { User } from '../../core/models/user.model';
 import { AuthService } from '../../core/services/auth.service';
 
+interface UserSelectionEvent {
+  user: User;
+  role: string;
+}
+
 @Component({
   selector: 'app-project-detail',
   templateUrl: './project-detail.component.html',
@@ -18,15 +23,15 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class ProjectDetailComponent implements OnInit {
   project: Project;
-  projectCopy: Project; // プロジェクトのコピーを作成
+  projectCopy: Project;
   members: User[] = [];
-  membersCopy: User[] = []; // メンバーのコピーを作成
+  membersCopy: User[] = [];
   owners: User[] = [];
-  ownersCopy: User[] = []; // オーナーのコピーを作成
+  ownersCopy: User[] = [];
   colors: string[] = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'gray', 'black', 'white'];
   isOwner: boolean = false;
   currentUserUid: string | undefined;
-  searchedUsers: User[] = []; // 検索結果のユーザーを保持するプロパティ
+  searchedUsers: User[] = [];
 
   constructor(
     public dialogRef: MatDialogRef<ProjectDetailComponent>,
@@ -36,7 +41,7 @@ export class ProjectDetailComponent implements OnInit {
     public authService: AuthService
   ) {
     this.project = data.project;
-    this.projectCopy = JSON.parse(JSON.stringify(this.project)); // プロジェクトのコピーを作成
+    this.projectCopy = JSON.parse(JSON.stringify(this.project));
   }
 
   ngOnInit() {
@@ -55,7 +60,7 @@ export class ProjectDetailComponent implements OnInit {
       this.userService.getUserById(memberId).subscribe(user => {
         if (user) {
           this.members.push({ ...user, uid: memberId });
-          this.membersCopy.push({ ...user, uid: memberId }); // コピーも作成
+          this.membersCopy.push({ ...user, uid: memberId });
         }
       });
     });
@@ -68,7 +73,7 @@ export class ProjectDetailComponent implements OnInit {
       this.userService.getUserById(ownerId).subscribe(user => {
         if (user) {
           this.owners.push({ ...user, uid: ownerId });
-          this.ownersCopy.push({ ...user, uid: ownerId }); // コピーも作成
+          this.ownersCopy.push({ ...user, uid: ownerId });
         }
       });
     });
@@ -94,8 +99,13 @@ export class ProjectDetailComponent implements OnInit {
     }
   }
 
-  handleUserSelected(users: User[]) {
-    this.searchedUsers = users; // 検索結果を保持
+  handleUserSelected(event: UserSelectionEvent) {
+    const { user, role } = event;
+    if (role === 'member') {
+      this.addMember(user);
+    } else if (role === 'owner') {
+      this.addOwner(user);
+    }
   }
 
   addMember(user: User) {
@@ -125,6 +135,6 @@ export class ProjectDetailComponent implements OnInit {
   }
 
   cancel() {
-    this.dialogRef.close(); // ダイアログを閉じるだけ
+    this.dialogRef.close();
   }
 }

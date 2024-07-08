@@ -2,32 +2,41 @@
 .app-container {
   display: flex;
   height: 100vh;
-  width: 100vw; /* 横幅を100vwに設定 */
+  width: 100vw;
 }
 
 .side-nav {
-  width: 200px; /* サイドナビの幅を固定 */
+  width: 200px;
   background-color: #f8f9fa;
   display: flex;
   flex-direction: column;
   padding: 10px;
+  height: 100vh; /* 高さを100vhに設定 */
+  box-sizing: border-box; /* パディングを含む */
 }
 
 .side-nav nav ul {
   list-style-type: none;
   padding: 0;
+  margin: 0;
+  flex-grow: 1;
 }
 
 .side-nav nav ul li {
-  margin-bottom: 10px;
+  margin-bottom: 5px; /* 各リストアイテムの間隔を小さく */
+  display: flex;
 }
 
 .nav-link {
   text-decoration: none;
-  padding: 10px;
+  padding: 5px 10px; /* パディングを減らしてボックスを小さく */
   color: #000;
   border-radius: 4px;
-  display: block;
+  display: flex;
+  align-items: center; /* 垂直方向に中央揃え */
+  justify-content: center; /* 水平方向に中央揃え */
+  height: 18px; /* 高さを固定 */
+  flex: 1;
 }
 
 .nav-link:hover {
@@ -46,6 +55,10 @@
   border-radius: 4px;
   cursor: pointer;
   text-align: center;
+  height: 40px; /* 高さを固定 */
+  display: flex;
+  align-items: center; /* 垂直方向に中央揃え */
+  justify-content: center; /* 水平方向に中央揃え */
 }
 
 .logout-button:hover {
@@ -56,11 +69,8 @@
   flex-grow: 1;
   padding: 30px;
   overflow-y: auto;
-  /* width: calc(100% - 220px); サイドナビを除いた幅に設定 */
-  /* margin-left: 220px; サイドナビの幅を確保 */
   display: flex;
   flex-direction: column;
-  margin-right: 0; /* 右側の余白を0に設定 */
-  padding-right: 0; /* 右側のパディングを0に設定 */
+  margin-right: 0;
+  padding-right: 0;
 }
-

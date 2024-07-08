@@ -1,4 +1,3 @@
-/* src\app\components\project-detail\project-detail.component.css */
 .project-detail-container {
   max-width: 600px;
   margin: 0 auto;
@@ -14,6 +13,17 @@
   z-index: 1000;
   border-radius: 8px;
   width: 80%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.buttons {
+  display: flex;
+  gap: 10px;
 }
 
 .color-dropdown {
@@ -40,7 +50,7 @@
 }
 
 button {
-  margin: 10px 5px 0 0;
+  margin: 0;
   padding: 8px 16px;
   border: none;
   border-radius: 5px;
@@ -54,7 +64,7 @@ button:hover {
   background-color: #bbb;
 }
 
-h3, h4 {
+h2, h3, h4 {
   margin: 10px 0;
 }
 
@@ -71,23 +81,21 @@ p {
   margin: 10px 0;
 }
 
-.search-container {
-  display: flex;
-  gap: 5px;
-  margin: 10px 0;
+.form-group {
+  margin-bottom: 20px;
 }
 
-.search-container input {
-  flex: 1;
-  padding: 8px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-
-.add-buttons {
+.form-group.dates {
   display: flex;
   gap: 10px;
-  margin: 10px 0;
+}
+
+.input-field {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box; /* パディングとボーダーを含めて幅を計算 */
 }
 
 /* Overlay to darken the background */

@@ -1,49 +1,39 @@
-// src\app\components\task-detail\task-detail.component.ts
-import { Component, Inject, Input, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { TaskSetService } from '../../core/services/taskSet.service'; // 正しいパスを使用
 import { TaskService } from '../../core/services/task.service';
 import { ReminderService } from '../../core/services/reminder.service';
-import { ProjectService } from '../../core/services/project.service';
 import { Task, Subtask } from '../../core/models/task.model';
-import { Project } from '../../core/models/project.model';
-import { Observable } from 'rxjs';
 
 @Component({
   standalone: true,
   imports: [CommonModule, FormsModule],
-  selector: 'app-task-detail',
-  templateUrl: './task-detail.component.html',
-  styleUrls: ['./task-detail.component.css']
+  selector: 'app-task-set-task-detail',
+  templateUrl: './task-set-task-detail.component.html',
+  styleUrls: ['./task-set-task-detail.component.css']
 })
-export class TaskDetailComponent implements OnInit {
-  @Input() task!: Task;
-  @Input() isReadOnly: boolean = false; // 追加: 読み取り専用フラグ
-  editedTask!: Task; // 編集用の一時的なタスク変数
-  originalTask!: Task; // 元のタスクデータを保持するためのプロパティ
+export class TaskSetTaskDetailComponent implements OnInit {
+  editedTask!: Task;
+  originalTask!: Task;
   colors: string[] = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'gray', 'black', 'white'];
   reminderUnits: string[] = ['分', '時間', '日', '週'];
-  projects$: Observable<Project[]> | null = null;
-  projects: Project[] = [];
   excludeDate: string = '';
 
   constructor(
     private taskService: TaskService,
     private reminderService: ReminderService,
-    @Inject(ProjectService) private projectService: ProjectService,
-    public dialogRef: MatDialogRef<TaskDetailComponent>,
+    private taskSetService: TaskSetService,
+    public dialogRef: MatDialogRef<TaskSetTaskDetailComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     if (data && data.task) {
-      this.task = data.task;
-      this.isReadOnly = data.isReadOnly; // 読み取り専用フラグを設定
-      this.originalTask = { ...data.task }; // 元のデータを保持
-      this.editedTask = { ...data.task, subtasks: [...data.task.subtasks] }; // 編集用にディープコピー
+      this.originalTask = { ...data.task };
+      this.editedTask = { ...data.task, subtasks: [...data.task.subtasks] };
     } else {
-      // タスクが提供されなかった場合に初期化
-      this.task = {
-        id: this.generateId(), // IDを生成
+      this.editedTask = {
+        id: this.generateId(),
         title: '',
         description: '',
         completed: false,
@@ -67,17 +57,11 @@ export class TaskDetailComponent implements OnInit {
         },
         userId: ''
       };
-      this.originalTask = { ...this.task }; // 元のデータを保持
-      this.editedTask = { ...this.task, subtasks: [...this.task.subtasks] }; // 編集用にディープコピー
+      this.originalTask = { ...this.editedTask };
     }
   }
 
   ngOnInit(): void {
-    this.projects$ = this.projectService.getProjectsByOwnerOrMember();
-    this.projects$.subscribe(projects => {
-      this.projects = projects;
-    });
-
     if (!this.editedTask.reminderTime) {
       this.editedTask.reminderTime = {
         value: null,
@@ -91,8 +75,6 @@ export class TaskDetailComponent implements OnInit {
   }
 
   async saveTask() {
-    if (this.isReadOnly) return; // 読み取り専用の場合は保存をブロック
-    
     if (this.editedTask.reminderTime && this.editedTask.reminderTime.value !== null) {
       const timeBeforeStart = this.calculateReminderTime({
         value: this.editedTask.reminderTime.value,
@@ -100,37 +82,25 @@ export class TaskDetailComponent implements OnInit {
       });
       this.reminderService.setReminder(this.editedTask, timeBeforeStart);
     }
-  
+
     try {
       if (this.editedTask.id) {
-        await this.taskService.updateTask(this.editedTask); // 既存のタスクを更新
+        await this.taskSetService.updateTaskInTaskSet(this.data.taskSetId, this.editedTask); 
       } else {
-        await this.taskService.addTask(this.editedTask); // 新しいタスクを追加
+        await this.taskSetService.addTaskToTaskSet(this.data.taskSetId, this.editedTask); 
       }
-      this.dialogRef.close(this.editedTask);  // ダイアログを閉じてタスクを返す
+      this.dialogRef.close(this.editedTask);
     } catch (error) {
       console.error('Error updating task:', error);
     }
   }
 
   async duplicateTask() {
-    await this.taskService.duplicateTask(this.editedTask); // Firestoreに複製
-    this.dialogRef.close();
-  }
-
-  async duplicateAsMyTask() {
-    const newTask: Task = {
-      ...this.editedTask,
-      id: this.generateId(),
-      userId: this.data.currentUserId // 現在のユーザーのIDを設定
-    };
-    await this.taskService.addTask(newTask); // Firestoreに複製
+    await this.taskSetService.duplicateTask(this.data.taskSetId, this.editedTask); 
     this.dialogRef.close();
   }
 
   addSubtask() {
-    if (this.isReadOnly) return; // 読み取り専用の場合は追加をブロック
-
     if (!this.editedTask.subtasks) {
       this.editedTask.subtasks = [];
     }
@@ -151,26 +121,20 @@ export class TaskDetailComponent implements OnInit {
   }
 
   deleteSubtask(index: number) {
-    if (this.isReadOnly) return; // 読み取り専用の場合は削除をブロック
-
     if (this.editedTask.subtasks) {
       this.editedTask.subtasks.splice(index, 1);
     }
   }
 
   cancel() {
-    this.dialogRef.close(this.originalTask);  // 元のタスクデータを返す
+    this.dialogRef.close(this.originalTask); 
   }
 
   selectColor(color: string) {
-    if (this.isReadOnly) return; // 読み取り専用の場合は色選択をブロック
-
     this.editedTask.tagColor = color;
   }
 
   addExcludeDate() {
-    if (this.isReadOnly) return; // 読み取り専用の場合は追加をブロック
-
     if (!this.editedTask.repeatSettings) {
       this.editedTask.repeatSettings = { frequency: 'none', businessDaysOnly: false, excludeDates: [] };
     }
@@ -184,8 +148,6 @@ export class TaskDetailComponent implements OnInit {
   }
 
   removeExcludeDate(date: string) {
-    if (this.isReadOnly) return; // 読み取り専用の場合は削除をブロック
-
     if (this.editedTask.repeatSettings && this.editedTask.repeatSettings.excludeDates) {
       this.editedTask.repeatSettings.excludeDates = this.editedTask.repeatSettings.excludeDates.filter(d => d !== date);
     }

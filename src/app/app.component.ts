@@ -1,3 +1,4 @@
+// src\app\app.component.ts
 import { Component } from '@angular/core';
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -45,6 +46,8 @@ export class AppComponent {
         return '/user-search';
       case 'プロジェクト進捗':
         return '/project-progress/プロジェクトIDを入力'; // 新しいパスを追加
+      case 'タスクセット': // 新しいリンク名とパスの対応を追加
+        return '/task-sets';
       default:
         return '/';
     }

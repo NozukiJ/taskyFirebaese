@@ -1,9 +1,13 @@
-// src\app\components\project-user-search\project-user-search.component.ts
 import { Component, Output, EventEmitter } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { User } from '../../core/models/user.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
+interface UserSelectionEvent {
+  user: User;
+  role: string;
+}
 
 @Component({
   selector: 'app-project-user-search',
@@ -15,38 +19,42 @@ import { FormsModule } from '@angular/forms';
 export class ProjectUserSearchComponent {
   searchTerm: string = '';
   users: User[] = [];
-  @Output() userSelected = new EventEmitter<User[]>();
+  @Output() userSelected = new EventEmitter<UserSelectionEvent>();
 
   constructor(private firestore: AngularFirestore) {}
 
   searchUsers() {
-    this.users = []; 
-
+    this.users = [];
     this.firestore.collection<User>('users', ref =>
-      ref.where('email', '==', this.searchTerm)
+      ref.where('displayName', '==', this.searchTerm).limit(10)
     ).get().subscribe(querySnapshot => {
       querySnapshot.forEach(doc => {
         this.users.push({ ...doc.data(), uid: doc.id });
       });
-      this.userSelected.emit(this.users);
     });
 
     this.firestore.collection<User>('users', ref =>
-      ref.where('displayName', '==', this.searchTerm)
+      ref.where('email', '==', this.searchTerm).limit(10)
     ).get().subscribe(querySnapshot => {
       querySnapshot.forEach(doc => {
         this.users.push({ ...doc.data(), uid: doc.id });
       });
-      this.userSelected.emit(this.users);
     });
 
     this.firestore.collection<User>('users', ref =>
-      ref.where('uid', '==', this.searchTerm)
+      ref.where('uid', '==', this.searchTerm).limit(10)
     ).get().subscribe(querySnapshot => {
       querySnapshot.forEach(doc => {
         this.users.push({ ...doc.data(), uid: doc.id });
       });
-      this.userSelected.emit(this.users);
     });
+  }
+
+  addMember(user: User) {
+    this.userSelected.emit({ user, role: 'member' });
+  }
+
+  addOwner(user: User) {
+    this.userSelected.emit({ user, role: 'owner' });
   }
 }

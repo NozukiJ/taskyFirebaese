@@ -1,3 +1,4 @@
+// src\app\core\services\project.service.ts
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Project } from '../models/project.model';

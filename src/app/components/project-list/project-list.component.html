@@ -1,3 +1,4 @@
+<!-- src\app\components\project-list\project-list.component.html -->
 <div class="task-list-container">
   <div class="task-actions">
     <button class="add-task-btn" (click)="openAddTaskDialog()">＋ タスクを追加</button>
@@ -11,6 +12,8 @@
         <div class="project-header">
           <input type="checkbox" [(ngModel)]="project.selected" class="project-checkbox" [disabled]="!canEdit(project)">
           <h3 (click)="openProjectDetailDialog(project)">{{ project.name }}</h3>
+          <span class="project-dates">{{ project.startDate }} - {{ project.endDate }}</span>
+          <span class="project-color" [style.backgroundColor]="project.color"></span>
           <span class="project-owners">オーナー: 
             <span *ngFor="let ownerId of project.owners">
               {{ ownersMap[ownerId]?.displayName || 'Unknown Owner' }}

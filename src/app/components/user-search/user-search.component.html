@@ -1,6 +1,7 @@
 <div>
-  <input type="text" [(ngModel)]="searchTerm" placeholder="メールアドレス、ユーザーID、ユーザー名で検索" />
+  <input type="text" [(ngModel)]="searchTerm" placeholder="ユーザー名で検索" />
   <button (click)="searchUsers()">検索</button>
+  <!-- "メールアドレス、ユーザーID、ユーザー名で検索" -->
 
   <ul>
     <li *ngFor="let user of users">
