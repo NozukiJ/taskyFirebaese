@@ -11,7 +11,7 @@
       <li *ngFor="let project of projects">
         <div class="project-header">
           <input type="checkbox" [(ngModel)]="project.selected" class="project-checkbox" [disabled]="!canEdit(project)">
-          <h3 (click)="openProjectDetailDialog(project)">{{ project.name }}</h3>
+          <h3 (click)="openProjectDetailDialog(project)">{{ project.name || '未命名のプロジェクト' }}</h3>
           <span class="project-dates">{{ project.startDate }} - {{ project.endDate }}</span>
           <span class="project-color" [style.backgroundColor]="project.color"></span>
           <span class="project-owners">オーナー: 

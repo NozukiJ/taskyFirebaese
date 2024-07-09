@@ -169,7 +169,6 @@ export class ProjectListComponent implements OnInit {
     });
   }
 
-  
   deleteSelectedTasks() {
     console.log('Deleting selected tasks...');
     const selectedTasks = this.tasks.filter(task => task.selected);
@@ -202,10 +201,6 @@ export class ProjectListComponent implements OnInit {
       console.error('Error in deleting tasks:', error);
     });
   }
-  
-  
-  
-  
 
   deleteSelectedProjects() {
     console.log('Deleting selected projects...');

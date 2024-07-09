@@ -1,3 +1,4 @@
+// src\app\core\services\reminder.service.ts
 import { Injectable } from '@angular/core';
 import { Task, Subtask } from '../models/task.model';
 
@@ -14,17 +15,18 @@ export class ReminderService {
     const startDate = new Date(task.startDateTime).getTime();
     const reminderTime = startDate - timeBeforeStart;
     const now = Date.now();
-
+  
     if (reminderTime > now) {
       const timeoutId = window.setTimeout(() => {
         const timeRemaining = this.calculateTimeRemaining(startDate - Date.now());
         alert(`タスク "${task.title}" の開始時間が近づいています！残り時間: ${timeRemaining}`);
         delete this.reminders[task.id];
       }, reminderTime - now);
-
+  
       this.reminders[task.id] = timeoutId;
     }
   }
+  
 
   clearReminder(task: Task) {
     if (this.reminders[task.id]) {

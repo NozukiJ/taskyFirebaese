@@ -147,7 +147,7 @@ export class TaskDetailComponent implements OnInit {
     }
     const newSubtask: Subtask = {
       id: this.generateId(),
-      title: '新しいサブタスク',
+      title: 'サブタスク',
       completed: false,
       description: '',
       priority: 'low',

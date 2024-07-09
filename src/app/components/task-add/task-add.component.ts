@@ -1,3 +1,4 @@
+// src\app\components\task-add\task-add.component.ts
 import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
@@ -83,7 +84,10 @@ export class TaskAddComponent implements OnInit {
           value: this.newTask.reminderTime.value,
           unit: this.newTask.reminderTime.unit
         });
-        this.reminderService.setReminder(this.newTask, timeBeforeStart);
+  
+        if (timeBeforeStart > 0) {
+          this.reminderService.setReminder(this.newTask, timeBeforeStart);
+        }
       }
       await this.taskService.addTask(this.newTask);
       this.dialogRef.close(this.newTask);
@@ -91,6 +95,7 @@ export class TaskAddComponent implements OnInit {
       console.error('Failed to save task:', error);
     }
   }
+  
 
   cancel() {
     this.dialogRef.close();
