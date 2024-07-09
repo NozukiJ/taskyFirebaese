@@ -228,7 +228,7 @@ export class TaskService {
     });
   }
 
-  private generateId(): string {
+  public generateId(): string {
     return Math.random().toString(36).substr(2, 9);
   }
 
@@ -262,4 +262,24 @@ export class TaskService {
       })
     );
   }
+
+  addTasksBatch(tasks: Omit<Task, 'id'>[]): Promise<void> {
+    const batch = this.firestore.firestore.batch();
+    const userId = this.getCurrentUserId();
+    if (!userId) {
+      return Promise.reject('User not authenticated');
+    }
+
+    tasks.forEach(task => {
+      const newTaskId = this.generateId();
+      const taskWithNewId = { ...task, id: newTaskId, userId: userId, selected: false };
+      const taskRef = this.firestore.collection(`users/${userId}/tasks`).doc(newTaskId).ref;
+      batch.set(taskRef, taskWithNewId);
+    });
+
+    return batch.commit().then(() => {
+      this.taskUpdatedSource.next();
+    });
+  }
+  
 }

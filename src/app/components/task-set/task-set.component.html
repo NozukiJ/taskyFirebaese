@@ -2,28 +2,37 @@
   <div class="task-actions">
     <input type="text" [(ngModel)]="newTaskSetName" placeholder="新しいタスクセットの名前" />
     <button class="add-task-btn" (click)="createTaskSet()">タスクセット作成</button>
+    <input type="text" [(ngModel)]="newIntervalSetName" placeholder="新しいインターバルセットの名前" />
+    <button class="add-task-btn" (click)="createIntervalSet()">インターバルセット作成</button>
   </div>
   <div class="task-set-selection">
-    <label for="taskSetDropdown">タスクリストを選択:</label>
+    <label for="taskSetDropdown">タスクセットを選択:</label>
     <select id="taskSetDropdown" [(ngModel)]="selectedTaskSetId" (change)="onTaskSetChange()">
       <option *ngFor="let taskSet of taskSets" [value]="taskSet.id">{{ taskSet.name }}</option>
     </select>
   </div>
   <div *ngFor="let taskSet of taskSets">
     <div class="task-set-header" *ngIf="selectedTaskSetId === taskSet.id">
-      <input type="checkbox" [(ngModel)]="taskSet.selected" class="task-checkbox">
       <div *ngIf="taskSet.isEditing">
         <input type="text" [(ngModel)]="taskSet.name" (blur)="saveTaskSetName(taskSet)" (keydown.enter)="saveTaskSetName(taskSet)" />
       </div>
       <div *ngIf="!taskSet.isEditing">
-        <h3 (click)="editTaskSetName(taskSet)">{{ taskSet.name }}</h3>
+        <h3 (click)="editTaskSetName(taskSet)">
+          {{ taskSet.name }}
+          <span class="task-set-duration">タスクの合計時間: {{ taskSetDurations[taskSet.id] || 0 }} 分</span>
+        </h3>
       </div>
+      <input type="datetime-local" [(ngModel)]="selectedStartDateTime" placeholder="開始日時を選択">
+      <button class="action-btn" (click)="applyStartDateTimeToTaskSet()">開始日時をタスクセットに適用する</button>
+      <button class="action-btn" (click)="addSelectedTasksToTaskList()">選択したタスクをタスク一覧に追加</button>
       <button class="add-task-btn" (click)="openAddTaskToSetDialog(taskSet)">＋セットにタスクを追加</button>
-      <button class="action-btn" (click)="deleteTaskSet(taskSet)">選択したタスクセットを削除</button>
+      <button class="action-btn" (click)="deleteSelectedTasks()">選択したタスクを削除</button>
+      <button class="action-btn" (click)="deleteTaskSet(taskSet)">タスクセットを削除</button>
     </div>
     <ul class="task-list" *ngIf="selectedTaskSet && selectedTaskSet.id === taskSet.id">
       <li class="task-header">
         <div class="task-header-content">
+          <input type="checkbox" (change)="toggleSelectAllTasks($event)">
           <span class="task-header-item">選択</span>
           <span class="task-header-item">タイトル</span>
           <span class="task-header-item">ステータス</span>
@@ -52,9 +61,6 @@
           </a>
         </div>
       </li>
-      <li class="task-footer">
-        <button class="action-btn" (click)="deleteSelectedTasks()">選択したタスクを削除</button>
-      </li>
     </ul>
   </div>
   <div class="interval-set-selection">
@@ -72,6 +78,7 @@
         <h3 (click)="editIntervalSetName(selectedIntervalSet)">{{ selectedIntervalSet.name }}</h3>
       </div>
       <button class="add-task-btn" (click)="openAddIntervalToSetDialog(selectedIntervalSet)">＋セットにインターバルを追加</button>
+      <button class="action-btn" (click)="deleteSelectedIntervals()">選択したインターバルを削除</button>
       <button class="action-btn" (click)="deleteIntervalSet(selectedIntervalSet)">インターバルセットを削除</button>
     </div>
     <ul class="interval-list">
@@ -91,9 +98,5 @@
       </li>
     </ul>
     <button class="action-btn" (click)="deleteSelectedIntervals()">選択したインターバルを削除</button>
-  </div>
-  <div class="task-actions">
-    <input type="text" [(ngModel)]="newIntervalSetName" placeholder="新しいインターバルセットの名前" />
-    <button class="add-task-btn" (click)="createIntervalSet()">インターバルセット作成</button>
   </div>
 </div>

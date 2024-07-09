@@ -4,13 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { TaskSetService } from '../../core/services/taskSet.service';
 import { IntervalSetService } from '../../core/services/intervalSet.service';
+import { TaskService } from '../../core/services/task.service';
 import { TaskSet } from '../../core/models/taskSet.model';
 import { IntervalSet } from '../../core/models/intervalSet.model';
 import { Task } from '../../core/models/task.model';
 import { TaskSetTaskDetailComponent } from '../task-set-task-detail/task-set-task-detail.component';
 import { TaskSetAddComponent } from '../task-set-add/task-set-add.component';
-import { IntervalSetAddComponent } from '../interval-set-add/interval-set-add.component'; 
-import { IntervalSetEditComponent } from '../interval-set-edit/interval-set-edit.component'; // 追加
+import { IntervalSetAddComponent } from '../interval-set-add/interval-set-add.component';
+import { IntervalSetEditComponent } from '../interval-set-edit/interval-set-edit.component';
 
 @Component({
   selector: 'app-task-set',
@@ -28,12 +29,15 @@ export class TaskSetComponent implements OnInit {
   selectedTaskSet: TaskSet | null = null;
   selectedIntervalSetId: string | null = null;
   selectedIntervalSet: IntervalSet | null = null;
-  intervals: any[] = []; // 選択されたインターバルセットのインターバルを格納する配列
-  tasks: Task[] = []; // 選択されたタスクセットのタスクを格納する配列
+  intervals: any[] = [];
+  tasks: Task[] = [];
+  taskSetDurations: { [key: string]: number } = {};
+  selectedStartDateTime: string | null = null;
 
   constructor(
     private taskSetService: TaskSetService,
     private intervalSetService: IntervalSetService,
+    private taskService: TaskService,
     public dialog: MatDialog
   ) {}
 
@@ -50,7 +54,8 @@ export class TaskSetComponent implements OnInit {
   loadTaskSets() {
     this.taskSetService.getTaskSets().subscribe((taskSets: any) => {
       this.taskSets = taskSets as TaskSet[];
-      this.taskSets.forEach(taskSet => taskSet.isEditing = false); // isEditingを初期化
+      this.taskSets.forEach(taskSet => taskSet.isEditing = false);
+      this.taskSets.forEach(taskSet => this.calculateTaskSetDuration(taskSet.id));
       if (this.selectedTaskSetId) {
         this.selectedTaskSet = this.taskSets.find(taskSet => taskSet.id === this.selectedTaskSetId) || null;
         if (this.selectedTaskSet) {
@@ -63,7 +68,7 @@ export class TaskSetComponent implements OnInit {
   loadIntervalSets() {
     this.intervalSetService.getIntervalSets().subscribe((intervalSets: any) => {
       this.intervalSets = intervalSets as IntervalSet[];
-      this.intervalSets.forEach(intervalSet => intervalSet.isEditing = false); // isEditingを初期化
+      this.intervalSets.forEach(intervalSet => intervalSet.isEditing = false);
       if (this.selectedIntervalSetId) {
         this.selectedIntervalSet = this.intervalSets.find(intervalSet => intervalSet.id === this.selectedIntervalSetId) || null;
         if (this.selectedIntervalSet) {
@@ -95,6 +100,7 @@ export class TaskSetComponent implements OnInit {
   loadTasksForTaskSet(taskSetId: string) {
     this.taskSetService.getTasksForTaskSet(taskSetId).subscribe((tasks: any) => {
       this.tasks = tasks as Task[];
+      this.calculateTaskSetDuration(taskSetId); // タスクをロードした後に合計時間を計算
     });
   }
 
@@ -243,5 +249,67 @@ export class TaskSetComponent implements OnInit {
         this.loadIntervalsForIntervalSet(this.selectedIntervalSet?.id || '');
       }
     });
+  }
+
+  toggleSelectAllTasks(event: any) {
+    const isChecked = event.target.checked;
+    this.tasks.forEach(task => task.selected = isChecked);
+  }
+
+ 
+  addSelectedTasksToTaskList(): void {
+    if (!this.selectedTaskSet) {
+      return;
+    }
+  
+    const selectedTasks = this.tasks.filter(task => task.selected).map(task => {
+      const newTask: any = { ...task, selected: false }; // selectedをfalseに設定
+      if (newTask.id) { // idが存在する場合にのみ削除
+        delete newTask.id;
+      }
+      return newTask;
+    });
+  
+    if (selectedTasks.length > 0) {
+      this.taskService.addTasksBatch(selectedTasks).then(() => {
+        console.log('Selected tasks added to task list');
+      }).catch(error => {
+        console.error('Error adding selected tasks to task list:', error);
+      });
+    }
+  }
+  
+  
+  
+  
+
+  calculateTaskSetDuration(taskSetId: string) {
+    this.taskSetService.getTasksForTaskSet(taskSetId).subscribe((data: any) => {
+      const tasks: Task[] = data as Task[];
+      const totalDuration = tasks.reduce((sum, task) => sum + (task.duration || 0), 0);
+      this.taskSetDurations[taskSetId] = totalDuration;
+    });
+  }
+
+  applyStartDateTimeToTaskSet() {
+    if (!this.selectedStartDateTime || !this.selectedTaskSet) {
+      return;
+    }
+
+    const startDateTime = new Date(this.selectedStartDateTime);
+    let currentDateTime = startDateTime;
+
+    for (let task of this.tasks) {
+      task.startDateTime = currentDateTime.toISOString();
+      const endDateTime = new Date(currentDateTime.getTime() + (task.duration * 60000));
+      task.endDateTime = endDateTime.toISOString();
+      currentDateTime = endDateTime;
+
+      this.taskService.updateTask(task).then(() => {
+        console.log(`Task ${task.title} updated with new start and end times`);
+      }).catch(error => {
+        console.error('Error updating task:', error);
+      });
+    }
   }
 }
