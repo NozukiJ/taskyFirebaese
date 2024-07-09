@@ -1,3 +1,4 @@
+// src/app/components/task-set-add/task-set-add.component.ts
 import { Component, Inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -24,6 +25,7 @@ export class TaskSetAddComponent implements OnInit {
     priority: 'low',
     startDateTime: '',
     endDateTime: '',
+    duration: 0,  // 追加
     tag: '',
     subtasks: [],
     selected: false,

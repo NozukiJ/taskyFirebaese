@@ -103,7 +103,7 @@ export class TaskListComponent implements OnInit {
 
   compareTasks(a: Task, b: Task): number {
     const priorityOrder: { [key: string]: number } = { 'high': 1, 'medium': 2, 'low': 3, '': 4 };
-
+  
     const getDate = (task: Task, order: string) => {
       switch (order) {
         case 'startDateAsc':
@@ -116,12 +116,15 @@ export class TaskListComponent implements OnInit {
           return null;
       }
     };
-
+  
     const dateA = getDate(a, this.sortOrder);
     const dateB = getDate(b, this.sortOrder);
-
+  
     if (dateA !== null && dateB !== null) {
-      return dateA - dateB;
+      if (this.sortOrder === 'startDateDesc' || this.sortOrder === 'endDateDesc') {
+        return dateB - dateA; // 降順の場合の比較
+      }
+      return dateA - dateB; // 昇順の場合の比較
     } else if (dateA === null && dateB === null) {
       if (this.sortOrder === 'priority') {
         if (a.priority !== b.priority) {

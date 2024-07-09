@@ -1,8 +1,9 @@
+// src/app/components/task-set-task-detail/task-set-task-detail.component.ts
 import { Component, Inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { TaskSetService } from '../../core/services/taskSet.service'; // 正しいパスを使用
+import { TaskSetService } from '../../core/services/taskSet.service';
 import { TaskService } from '../../core/services/task.service';
 import { ReminderService } from '../../core/services/reminder.service';
 import { Task, Subtask } from '../../core/models/task.model';
@@ -40,6 +41,7 @@ export class TaskSetTaskDetailComponent implements OnInit {
         priority: 'low',
         startDateTime: '',
         endDateTime: '',
+        duration: 0,  // 追加
         tag: '',
         subtasks: [],
         selected: false,

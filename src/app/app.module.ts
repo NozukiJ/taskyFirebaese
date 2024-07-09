@@ -1,5 +1,5 @@
-import { NgModule, importProvidersFrom } from '@angular/core';
-import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -10,16 +10,18 @@ import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
-import { provideRouter } from '@angular/router';
-import { routes } from './app-routing.module';
 import { environment } from '../environments/environment';
 import { ProjectProgressComponent } from './components/project-progress/project-progress.component';
 import { AuthService } from './core/services/auth.service';
 import { ProjectService } from './core/services/project.service';
 import { TaskService } from './core/services/task.service';
 import { HighchartsChartModule } from 'highcharts-angular';
-import { AppComponent } from './app.component';
-import { TaskSetComponent } from './components/task-set/task-set.component';
+import { CommonModule } from '@angular/common';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   imports: [
@@ -34,19 +36,16 @@ import { TaskSetComponent } from './components/task-set/task-set.component';
     AngularFireAuthModule,
     AngularFirestoreModule,
     HighchartsChartModule,
-    TaskSetComponent  // TaskSetComponentをここに追加
+    CommonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatSelectModule,
+    MatIconModule
   ],
   declarations: [
-    ProjectProgressComponent
+    ProjectProgressComponent,
   ],
   providers: [AuthService, ProjectService, TaskService],
-  bootstrap: []
 })
 export class AppModule { }
-
-bootstrapApplication(AppComponent, {
-  providers: [
-    importProvidersFrom(AppModule),
-    provideRouter(routes)
-  ]
-}).catch(err => console.error(err));

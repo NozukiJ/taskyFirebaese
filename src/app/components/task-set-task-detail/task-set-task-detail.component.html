@@ -23,13 +23,19 @@
   <div class="detail-row">
     <span class="detail-label">開始日時:</span>
     <span class="detail-content">
-      <input type="datetime-local" [(ngModel)]="editedTask.startDateTime">
+      <input type="datetime-local" [(ngModel)]="editedTask.startDateTime" disabled>
     </span>
   </div>
   <div class="detail-row">
     <span class="detail-label">終了日時:</span>
     <span class="detail-content">
-      <input type="datetime-local" [(ngModel)]="editedTask.endDateTime">
+      <input type="datetime-local" [(ngModel)]="editedTask.endDateTime" disabled>
+    </span>
+  </div>
+  <div class="detail-row">
+    <span class="detail-label">タスクの長さ (分):</span>
+    <span class="detail-content">
+      <input type="number" [(ngModel)]="editedTask.duration" placeholder="タスクの長さ">
     </span>
   </div>
   <div class="detail-row">

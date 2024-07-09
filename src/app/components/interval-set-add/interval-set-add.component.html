@@ -1,0 +1,35 @@
+<h2>インターバルをセットに追加</h2>
+<form (ngSubmit)="addInterval()">
+  <mat-form-field appearance="fill">
+    <mat-label>インターバル名</mat-label>
+    <input matInput placeholder="インターバル名" [(ngModel)]="newInterval.name" name="intervalName" required>
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>年</mat-label>
+    <input matInput type="number" placeholder="0" [(ngModel)]="newInterval.years" name="intervalYears">
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>月</mat-label>
+    <input matInput type="number" placeholder="0" [(ngModel)]="newInterval.months" name="intervalMonths">
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>週</mat-label>
+    <input matInput type="number" placeholder="0" [(ngModel)]="newInterval.weeks" name="intervalWeeks">
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>日</mat-label>
+    <input matInput type="number" placeholder="0" [(ngModel)]="newInterval.days" name="intervalDays">
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>時間</mat-label>
+    <input matInput type="number" placeholder="0" [(ngModel)]="newInterval.hours" name="intervalHours">
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>分</mat-label>
+    <input matInput type="number" placeholder="0" [(ngModel)]="newInterval.minutes" name="intervalMinutes">
+  </mat-form-field>
+  <div class="button-group">
+    <button mat-button type="submit">追加</button>
+    <button mat-button type="button" (click)="onCancel()">キャンセル</button>
+  </div>
+</form>

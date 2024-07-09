@@ -1,4 +1,3 @@
-// src\app\components\task-detail\task-detail.component.ts
 import { Component, Inject, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -22,6 +21,7 @@ export class TaskDetailComponent implements OnInit {
   @Input() isReadOnly: boolean = false; // 追加: 読み取り専用フラグ
   editedTask!: Task; // 編集用の一時的なタスク変数
   originalTask!: Task; // 元のタスクデータを保持するためのプロパティ
+  originalExcludeDates: string[] = []; // 元の除外日リストを保持
   colors: string[] = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'gray', 'black', 'white'];
   reminderUnits: string[] = ['分', '時間', '日', '週'];
   projects$: Observable<Project[]> | null = null;
@@ -39,11 +39,12 @@ export class TaskDetailComponent implements OnInit {
       this.task = data.task;
       this.isReadOnly = data.isReadOnly; // 読み取り専用フラグを設定
       this.originalTask = { ...data.task }; // 元のデータを保持
-      this.editedTask = { ...data.task, subtasks: [...data.task.subtasks] }; // 編集用にディープコピー
+      this.originalExcludeDates = data.task.repeatSettings?.excludeDates ? [...data.task.repeatSettings.excludeDates] : []; // 元の除外日リストを保持
+      this.editedTask = { ...data.task, subtasks: [...data.task.subtasks], duration: data.task.duration ?? 0 }; // 編集用にディープコピー
     } else {
       // タスクが提供されなかった場合に初期化
       this.task = {
-        id: this.generateId(), // IDを生成
+        id: this.generateId(),
         title: '',
         description: '',
         completed: false,
@@ -65,8 +66,10 @@ export class TaskDetailComponent implements OnInit {
           value: null,
           unit: '分'
         },
-        userId: ''
+        userId: '',
+        duration: 0 // durationを追加
       };
+      
       this.originalTask = { ...this.task }; // 元のデータを保持
       this.editedTask = { ...this.task, subtasks: [...this.task.subtasks] }; // 編集用にディープコピー
     }
@@ -114,15 +117,22 @@ export class TaskDetailComponent implements OnInit {
   }
 
   async duplicateTask() {
-    await this.taskService.duplicateTask(this.editedTask); // Firestoreに複製
-    this.dialogRef.close();
+    const newTask: Task = {
+      ...this.editedTask,
+      id: this.generateId(),
+      userId: this.data.currentUserId, // 現在のユーザーのIDを設定
+      duration: this.editedTask.duration ?? 0 // durationがundefinedの場合は0を設定
+    };
+    await this.taskService.addTask(newTask); // Firestoreに複製
+    this.dialogRef.close(newTask);
   }
 
   async duplicateAsMyTask() {
     const newTask: Task = {
       ...this.editedTask,
       id: this.generateId(),
-      userId: this.data.currentUserId // 現在のユーザーのIDを設定
+      userId: this.data.currentUserId, // 現在のユーザーのIDを設定
+      duration: this.editedTask.duration ?? 0 // durationがundefinedの場合は0を設定
     };
     await this.taskService.addTask(newTask); // Firestoreに複製
     this.dialogRef.close();
@@ -159,6 +169,7 @@ export class TaskDetailComponent implements OnInit {
   }
 
   cancel() {
+    this.editedTask.repeatSettings!.excludeDates = [...this.originalExcludeDates]; // 元の除外日リストに戻す
     this.dialogRef.close(this.originalTask);  // 元のタスクデータを返す
   }
 

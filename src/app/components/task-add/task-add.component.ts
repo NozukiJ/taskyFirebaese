@@ -39,7 +39,7 @@ export class TaskAddComponent implements OnInit {
     status: '未着手',
     projectId: '',
     repeatSettings: {
-      frequency: 'none', // デフォルトを 'none' に設定
+      frequency: 'none',
       daysOffsetFromEnd: 1,
       endDate: '',
       businessDaysOnly: false,
@@ -49,8 +49,10 @@ export class TaskAddComponent implements OnInit {
       value: 0,
       unit: '分'
     },
-    userId: '' // 追加
+    userId: '',
+    duration: 0 // durationを追加
   };
+  
 
   constructor(
     public dialogRef: MatDialogRef<TaskAddComponent>,

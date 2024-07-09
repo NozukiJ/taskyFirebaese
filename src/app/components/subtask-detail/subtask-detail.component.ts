@@ -66,8 +66,10 @@ export class SubtaskDetailComponent implements OnInit {
           value: null,
           unit: '分'
         },
-        userId: ''
+        userId: '',
+        duration: 0 // durationを追加
       };
+      
     }
   }
 

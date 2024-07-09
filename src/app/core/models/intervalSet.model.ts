@@ -6,4 +6,5 @@ export interface IntervalSet {
     name: string;
     intervals: number[];
     selected?: boolean;
+    isEditing?: boolean; 
 }

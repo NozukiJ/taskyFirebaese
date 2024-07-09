@@ -6,4 +6,5 @@ export interface TaskSet {
     name: string;
     tasks: Task[];
     selected?: boolean;
+    isEditing?: boolean;
   }

@@ -1,34 +1,18 @@
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-import { enableProdMode } from '@angular/core';
-import { environment } from './environments/environment';
 import { bootstrapApplication } from '@angular/platform-browser';
+import { provideRouter } from '@angular/router';
+import { routes } from './app/app-routing.module';
 import { AppComponent } from './app/app.component';
 import { importProvidersFrom } from '@angular/core';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { FormsModule } from '@angular/forms';
-import { MatDialogModule } from '@angular/material/dialog';
-import { HttpClientModule } from '@angular/common/http';
-import { AppRoutingModule } from './app/app-routing.module';
-import { CalendarModule, DateAdapter } from 'angular-calendar';
-import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
-import { AngularFireModule } from '@angular/fire/compat';
-import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
+import { AppModule } from './app/app.module';
 
-if (environment.production) {
-  enableProdMode();
-}
+// スタンドアロンコンポーネントのインポート
+import { TaskSetComponent } from './app/components/task-set/task-set.component';
+import { IntervalSetAddComponent } from './app/components/interval-set-add/interval-set-add.component';
+import { IntervalSetEditComponent } from './app/components/interval-set-edit/interval-set-edit.component';
 
 bootstrapApplication(AppComponent, {
   providers: [
-    importProvidersFrom(
-      BrowserAnimationsModule,
-      FormsModule,
-      MatDialogModule,
-      HttpClientModule,
-      AppRoutingModule,
-      CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory }),
-      AngularFireModule.initializeApp(environment.firebaseConfig),
-      AngularFirestoreModule
-    )
+    importProvidersFrom(AppModule),
+    provideRouter(routes)
   ]
 }).catch(err => console.error(err));

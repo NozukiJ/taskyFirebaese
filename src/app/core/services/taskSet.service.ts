@@ -79,6 +79,16 @@ export class TaskSetService {
       .set(newTask);
   }
 
+  deleteTaskFromTaskSet(taskSetId: string, taskId: string): Promise<void> {
+    if (!this.userId) {
+      return Promise.reject('User ID is not available');
+    }
+    return this.firestore
+      .collection(`users/${this.userId}/taskSets/${taskSetId}/tasks`)
+      .doc(taskId)
+      .delete();
+  }
+
   waitForUserId() {
     return new Promise<void>((resolve, reject) => {
       if (this.userId) {

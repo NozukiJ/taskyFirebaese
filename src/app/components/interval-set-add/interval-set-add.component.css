@@ -1,0 +1,46 @@
+/* 全体のスタイル */
+:host {
+    display: block;
+    padding: 20px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 400px; /* フォームの最大幅を設定 */
+    margin: 0 auto;
+  }
+  
+  /* フォームのスタイル */
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  /* 入力フィールドのスタイル */
+  mat-form-field {
+    width: 100%;
+  }
+  
+  /* ボタングループのスタイル */
+  .button-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  
+  /* ボタンのスタイル */
+  button {
+    width: 100px;
+  }
+  
+  /* 見出しのスタイル */
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  /* スクロールバーが表示されるように設定 */
+  :host {
+    overflow-y: auto;
+    max-height: 100vh;
+  }
+  

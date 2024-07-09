@@ -57,7 +57,8 @@ export class TaskService {
                     reminderTime: data.reminderTime,
                     projectId: data.projectId,
                     repeatSettings: data.repeatSettings,
-                    userId: data.userId
+                    userId: data.userId,
+                    duration: data.duration // durationを追加
                   };
                 });
               })
@@ -89,7 +90,8 @@ export class TaskService {
       const taskWithId: Task = {
         ...task,
         id: id,
-        userId: userId
+        userId: userId,
+        duration: task.duration // durationを追加
       };
       return this.firestore.collection(`users/${userId}/tasks`).doc(id).set(taskWithId).then(() => {
         this.taskUpdatedSource.next();
@@ -230,27 +232,26 @@ export class TaskService {
     return Math.random().toString(36).substr(2, 9);
   }
 
- 
   getTasksByProjectIds(projectIds: string[]): Observable<Task[]> {
     if (projectIds.length === 0) {
       return of([] as Task[]);
     }
-  
+
     console.log('Fetching tasks for project IDs:', projectIds);
-  
+
     return this.authService.user$.pipe(
       switchMap(user => {
         if (!user) {
           return of([] as Task[]);
         }
-  
-        const tasksObservables: Observable<Task[]>[] = projectIds.map(projectId => 
+
+        const tasksObservables: Observable<Task[]>[] = projectIds.map(projectId =>
           this.firestore.collection<Task>(`users/${user.uid}/tasks`, ref => {
             console.log(`Querying tasks for projectId: ${projectId}`);
             return ref.where('projectId', '==', projectId);
           }).valueChanges()
         );
-  
+
         return combineLatest(tasksObservables).pipe(
           map((tasksArray: Task[][]) => {
             const flatTasks = tasksArray.flat();
@@ -261,7 +262,4 @@ export class TaskService {
       })
     );
   }
-  
-  
-
 }

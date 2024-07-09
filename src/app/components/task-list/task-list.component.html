@@ -89,7 +89,7 @@
       <ul class="subtask-list">
         <li *ngFor="let subtask of task.subtasks" class="subtask-item">
           <div class="subtask-item-content" (click)="openSubtaskDetailDialog(subtask, task)">
-            <input type="checkbox" [(ngModel)]="subtask.selected" class="subtask-checkbox" (click)="$event.stopPropagation()">
+            <!-- <input type="checkbox" [(ngModel)]="subtask.selected" class="subtask-checkbox" (click)="$event.stopPropagation()"> -->
             <span class="subtask-title">{{ subtask.title }}</span>
             <span class="subtask-status">{{ subtask.status }}</span>
             <span class="subtask-priority" [ngClass]="subtask.priority">{{ getPriorityLabel(subtask.priority) }}</span>

@@ -311,6 +311,9 @@ firebase/compat/auth
 
 firebase/compat/firestore
 
+highcharts-angular
+SEE LICENSE IN <LICENSE>
+
 idb
 ISC
 ISC License (ISC)
