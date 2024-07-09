@@ -40,7 +40,7 @@ export class TaskDetailComponent implements OnInit {
       this.isReadOnly = data.isReadOnly; // 読み取り専用フラグを設定
       this.originalTask = { ...data.task }; // 元のデータを保持
       this.originalExcludeDates = data.task.repeatSettings?.excludeDates ? [...data.task.repeatSettings.excludeDates] : []; // 元の除外日リストを保持
-      this.editedTask = { ...data.task, subtasks: [...data.task.subtasks], duration: data.task.duration ?? 0 }; // 編集用にディープコピー
+      this.editedTask = this.deepCopyTask(data.task); // 編集用にディープコピー
     } else {
       // タスクが提供されなかった場合に初期化
       this.task = {
@@ -71,7 +71,7 @@ export class TaskDetailComponent implements OnInit {
       };
       
       this.originalTask = { ...this.task }; // 元のデータを保持
-      this.editedTask = { ...this.task, subtasks: [...this.task.subtasks] }; // 編集用にディープコピー
+      this.editedTask = this.deepCopyTask(this.task); // 編集用にディープコピー
     }
   }
 
@@ -132,6 +132,7 @@ export class TaskDetailComponent implements OnInit {
       ...this.editedTask,
       id: this.generateId(),
       userId: this.data.currentUserId, // 現在のユーザーのIDを設定
+      projectId: '', // プロジェクトに無所属にする
       duration: this.editedTask.duration ?? 0 // durationがundefinedの場合は0を設定
     };
     await this.taskService.addTask(newTask); // Firestoreに複製
@@ -169,8 +170,8 @@ export class TaskDetailComponent implements OnInit {
   }
 
   cancel() {
-    this.editedTask.repeatSettings!.excludeDates = [...this.originalExcludeDates]; // 元の除外日リストに戻す
-    this.dialogRef.close(this.originalTask);  // 元のタスクデータを返す
+    this.editedTask = this.deepCopyTask(this.originalTask); // 編集用のタスクを元のタスクに戻す
+    this.dialogRef.close(this.originalTask);  // ダイアログを閉じて元のタスクデータを返す
   }
 
   selectColor(color: string) {
@@ -220,5 +221,17 @@ export class TaskDetailComponent implements OnInit {
       default:
         return 0;
     }
+  }
+
+  private deepCopyTask(task: Task): Task {
+    return {
+      ...task,
+      subtasks: task.subtasks ? task.subtasks.map(subtask => ({ ...subtask })) : [],
+      repeatSettings: task.repeatSettings ? {
+        ...task.repeatSettings,
+        excludeDates: task.repeatSettings.excludeDates ? [...task.repeatSettings.excludeDates] : []
+      } : undefined,
+      reminderTime: task.reminderTime ? { ...task.reminderTime } : undefined
+    };
   }
 }

@@ -163,7 +163,7 @@ export class TaskListComponent implements OnInit {
       task.subtasks = task.subtasks.filter(subtask => !subtask.selected);
       return true;
     });
-    this.deselectAllTasks();
+    this.deselectAllTasks(); // 選択を解除
     this.saveTasks();
   }
 
@@ -184,7 +184,7 @@ export class TaskListComponent implements OnInit {
     });
 
     await Promise.all(duplicatePromises);
-    this.deselectAllTasks();
+    this.deselectAllTasks(); // 選択を解除
     this.taskDuplicated.emit('選択したタスクを複製しました');
   }
 
@@ -206,11 +206,12 @@ export class TaskListComponent implements OnInit {
     });
 
     await Promise.all(duplicatePromises);
-    this.deselectAllTasks();
+    this.deselectAllTasks(); // 選択を解除
     this.taskDuplicated.emit('自分のタスクとして複製しました');
   }
 
   deselectAllTasks() {
+    this.selectAll = false; // 全選択チェックボックスの状態をリセット
     this.tasks.forEach(task => task.selected = false);
     this.tasks.forEach(task => task.subtasks.forEach(subtask => subtask.selected = false));
   }
